@@ -1,7 +1,7 @@
 <div align="center">
 
 # **👀 nineteen [τ, τ] SN19 - EAGER VALIDATOR EDITION**
-An ovverride of Nineteen Validator code that allows you to specify a single miner to validate and to do so every minute.
+An override of Nineteen Validator code that allows you to specify a single miner to validate and to do so every minute.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
