@@ -53,7 +53,7 @@ async def get_nodes_and_contenders(config: Config) -> list[Contender] | None:
 
 
 async def schedule_synthetics(config: Config) -> None:
-    logger.info(f"Scheduling synthetics; this will take {ccst.SCORING_PERIOD_TIME // 60} minutes ish...")
+    logger.info(f"Scheduling synthetics; this will take {ccst.SCORING_PERIOD_TIME // 60} seconds ish (eager validator)...")
 
     await schedule_synthetic_queries.schedule_synthetics_until_done(config)
 
