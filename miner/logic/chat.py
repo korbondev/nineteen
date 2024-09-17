@@ -1,5 +1,5 @@
-import json
-import httpx
+import aiohttp
+import traceback
 from fiber.logging_utils import get_logger
 
 from core.models import payload_models
@@ -10,7 +10,7 @@ logger = get_logger(__name__)
 
 
 async def chat_stream(
-    httpx_client: httpx.AsyncClient, decrypted_payload: payload_models.ChatPayload, worker_config: WorkerConfig
+    aiohttp_client: aiohttp.ClientSession, decrypted_payload: payload_models.ChatPayload, worker_config: WorkerConfig
 ):
     task_config = tcfg.get_enabled_task_config(decrypted_payload.model)
     if task_config is None:
@@ -29,24 +29,20 @@ async def chat_stream(
 
     assert address is not None, f"Address for model: {decrypted_payload.model} is not set in env vars!"
 
-    if True:
-        # NOTE: review timeout?
-        async with httpx_client.stream("POST", address, json=decrypted_payload.model_dump(), timeout=3) as resp:
+
+    async with aiohttp.ClientSession() as session:
+        async with session.post(address, json=decrypted_payload.model_dump(), timeout=3) as resp:
             resp.raise_for_status()
-            async for chunk in resp.aiter_lines():
+            async for chunk_enc in resp.content:
+                chunk = None
                 try:
-                    received_event_chunks = chunk.split("\n\n")
-                    for event in received_event_chunks:
-                        if event == "":
+                    chunk = chunk_enc.decode()
+                    for event in chunk.split("\n\n"):
+                        if not event.strip():
                             continue
                         prefix, _, data = event.partition(":")
                         if data.strip() == "[DONE]":
                             break
                         yield f"data: {data}\n\n"
                 except Exception as e:
-                    logger.error(f"Error in streaming text from the server: {e}. Original chunk: {chunk}")
-    else:
-        for i in range(100):
-            data = {"choices": [{"delta": {"content": f"{i}"}}]}
-            yield f"data: {json.dumps(data)}\n\n"
-        yield "data: [DONE]\n\n"
+                    logger.error(f"Error in streaming text from the server: {e}. Original chunk: {chunk}\n{traceback.format_exc()}")
