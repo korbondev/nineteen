@@ -3,7 +3,7 @@ import aiohttp
 from pydantic import BaseModel
 from core.logging import get_logger
 from miner.config import WorkerConfig
-import miner.constants
+from miner.constants import map_endpoint_with_override
 
 logger = get_logger(__name__)
 
@@ -68,9 +68,7 @@ async def get_image_from_server(
         return None
     except json.JSONDecodeError as error:
         logger.error(f"Failed to decode JSON response from {endpoint}")
-        logger.error(f"JSON decode error: {str(error)}")
-        if error.doc:
-            logger.error(f"Response content: {error.doc[:1000]}...")  # Log first 1000 characters of the invalid JSON
+        logger.error(f"JSON decode error: {str(error)[:1000]}")# Log first 1000 characters of the invalid JSON
         return None
     except Exception as error:
         logger.error(f"Unexpected error occurred while getting an image from {endpoint}: {str(error)}")
