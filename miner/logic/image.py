@@ -3,21 +3,9 @@ import aiohttp
 from pydantic import BaseModel
 from core.logging import get_logger
 from miner.config import WorkerConfig
-from miner.constants import ENDPOINT_TO_PORT_MAP
-# TODO: add ujson
+import miner.constants
 
 logger = get_logger(__name__)
-
-
-def map_endpoint(post_endpoint, engine, endpoint):
-    if post_endpoint in ["avatar", "inpaint"]:
-        return f"http://127.0.0.1:{ENDPOINT_TO_PORT_MAP[post_endpoint]}/{post_endpoint}"
-    
-    engine_task = f"{engine}-{post_endpoint}"
-    if engine_task in ENDPOINT_TO_PORT_MAP:
-        return f"http://127.0.0.1:{ENDPOINT_TO_PORT_MAP[engine_task]}/{post_endpoint}"
-
-    return endpoint
 
 
 async def get_image_from_server(
@@ -31,14 +19,23 @@ async def get_image_from_server(
     endpoint = worker_config.IMAGE_WORKER_URL.rstrip("/") + "/" + post_endpoint
 
     body_dict = body.model_dump()
-    endpoint = map_endpoint(post_endpoint, body_dict.get("engine", ""), endpoint)
+    model = body_dict.get("model", None)
+    endpoint, engine = map_endpoint_with_override(post_endpoint, model, endpoint)
+    if "model" in body_dict:
+        del body_dict["model"]
+    body_dict["engine"] = engine
 
     try:
         logger.debug(f"Sending request to {endpoint}")
         response = await aiohttp_client.post(endpoint, json=body_dict, timeout=timeout)
         response.raise_for_status()
 
-        return await response.json()
+        response_data = await response.json()
+        if "engine" in response_data:
+            del response_data["engine"]
+        response_data["model"] = model
+
+        return response_data
 
     except aiohttp.ClientResponseError as error:
         error_details = {
@@ -50,11 +47,8 @@ async def get_image_from_server(
             "response_headers": dict(error.request_info.headers),
             "response_body": error.message
         }
-        logger.error(f"Detailed error information:\n{json.dumps(error_details, indent=2)}")
-        logger.error(f"HTTP Status error when getting an image from {endpoint}. Status code: {error.status}")
-        logger.error(f"Response body: {json.dumps(body)[:1000]}...")  # Log first 1000 characters of response body
-        logger.error(f"Request headers: {dict(error.request_info.headers)}")
-        logger.error(f"Response headers: {dict(error.request_info.headers)}")
+        logger.error(f"HTTP error when getting an image from {endpoint}. Status: {error.status}")
+        logger.error(f"Error details: {json.dumps(error_details, indent=2)}")
 
         if error.status == 400:
             logger.error("Bad request. Check if the request payload is correct.")
@@ -84,11 +78,10 @@ async def get_image_from_server(
     except json.JSONDecodeError as error:
         logger.error(f"Failed to decode JSON response from {endpoint}")
         logger.error(f"JSON decode error: {str(error)}")
-        logger.error(f"Response content: {error.doc[:1000]}...")  # Log first 1000 characters of the invalid JSON
+        if error.doc:
+            logger.error(f"Response content: {error.doc[:1000]}...")  # Log first 1000 characters of the invalid JSON
         return None
     except Exception as error:
-        logger.error(f"Unexpected error occurred while getting an image from {endpoint}")
-        logger.error(f"Error type: {type(error).__name__}")
-        logger.error(f"Error details: {str(error)}")
+        logger.error(f"Unexpected error occurred while getting an image from {endpoint}: {str(error)}")
         logger.exception("Stack trace:")
         return None
