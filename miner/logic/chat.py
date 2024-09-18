@@ -5,6 +5,7 @@ from fiber.logging_utils import get_logger
 from core.models import payload_models
 from core import tasks_config as tcfg
 from miner.config import WorkerConfig
+import miner.constants
 
 logger = get_logger(__name__)
 
@@ -29,6 +30,7 @@ async def chat_stream(
 
     assert address is not None, f"Address for model: {decrypted_payload.model} is not set in env vars!"
 
+    address, _ = map_endpoint_with_override(address, task_config.task, address)
 
     async with aiohttp.ClientSession() as session:
         async with session.post(address, json=decrypted_payload.model_dump(), timeout=3) as resp:
