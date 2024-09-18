@@ -19,23 +19,14 @@ async def get_image_from_server(
     endpoint = worker_config.IMAGE_WORKER_URL.rstrip("/") + "/" + post_endpoint
 
     body_dict = body.model_dump()
-    model = body_dict.get("model", None)
-    endpoint, engine = map_endpoint_with_override(post_endpoint, model, endpoint)
-    if "model" in body_dict:
-        del body_dict["model"]
+    endpoint, engine = map_endpoint_with_override(post_endpoint, body_dict.get("model", None), endpoint)
     body_dict["engine"] = engine
 
     try:
         logger.debug(f"Sending request to {endpoint}")
         response = await aiohttp_client.post(endpoint, json=body_dict, timeout=timeout)
         response.raise_for_status()
-
-        response_data = await response.json()
-        if "engine" in response_data:
-            del response_data["engine"]
-        response_data["model"] = model
-
-        return response_data
+        return await response.json()
 
     except aiohttp.ClientResponseError as error:
         error_details = {
