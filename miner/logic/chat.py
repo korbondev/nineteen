@@ -5,7 +5,7 @@ from fiber.logging_utils import get_logger
 from core.models import payload_models
 from core import tasks_config as tcfg
 from miner.config import WorkerConfig
-import miner.constants
+from miner.constants import map_endpoint_with_override
 
 logger = get_logger(__name__)
 
