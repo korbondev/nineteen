@@ -13,8 +13,8 @@ ENDPOINT_TO_PORT_MAP = {
     "dreamshaper-image-to-image": (7242, "img2img", "dreamshaper"),
     "flux-schnell-text-to-image": (7251, "txt2img", "flux-schnell"),
     "flux-schnell-image-to-image": (7252, "img2img", "flux-schnell"),
-    "chat-llama-3-1-70b": (7401, "", ""), # need to check vllm endpoint route
-    "chat-llama-3-1-8b": (7101, "", ""), # need to check vllm endpoint route
+    "chat-llama-3-1-70b": (7401, "", None), # need to check vllm endpoint route
+    "chat-llama-3-1-8b": (7101, "", None), # need to check vllm endpoint route
 }
 
 def map_endpoint_with_override(post_endpoint, task, default_endpoint):
