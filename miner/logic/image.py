@@ -1,4 +1,4 @@
-import json
+import ujson as json
 import aiohttp
 from pydantic import BaseModel
 from core.logging import get_logger

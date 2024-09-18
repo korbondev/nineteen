@@ -1,4 +1,4 @@
-import json
+import ujson as json
 from redis.asyncio import Redis
 from core.models.payload_models import ImageResponse
 from validator.models import Contender
