@@ -2,7 +2,7 @@ services:
   core:
     build:
       context: .
-      dockerfile: dockerfiles/core.dockerfile
+      dockerfile: dockerfiles/control_node.dockerfile
     image: core
     networks:
       - postgres_network
