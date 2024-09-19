@@ -33,19 +33,18 @@ async def chat_stream(
 
     address, _ = map_endpoint_with_override(address, task_config.task, address)
 
-    async with aiohttp.ClientSession() as session:
-        async with session.post(address, json=decrypted_payload.model_dump(), timeout=3) as resp:
-            resp.raise_for_status()
-            async for chunk_enc in resp.content:
-                chunk = None
-                try:
-                    chunk = chunk_enc.decode()
-                    for event in chunk.split("\n\n"):
-                        if not event.strip():
-                            continue
-                        prefix, _, data = event.partition(":")
-                        if data.strip() == "[DONE]":
-                            break
-                        yield f"data: {data}\n\n"
-                except Exception as e:
-                    logger.error(f"Error in streaming text from the server: {e}. Original chunk: {chunk}\n{traceback.format_exc()}")
+    async with aiohttp_client.post(address, json=decrypted_payload.model_dump(), timeout=3) as resp:
+        resp.raise_for_status()
+        async for chunk_enc in resp.content:
+            chunk = None
+            try:
+                chunk = chunk_enc.decode()
+                for event in chunk.split("\n\n"):
+                    if not event.strip():
+                        continue
+                    prefix, _, data = event.partition(":")
+                    if data.strip() == "[DONE]":
+                        break
+                    yield f"data: {data}\n\n"
+            except Exception as e:
+                logger.error(f"Error in streaming text from the server: {e}. Original chunk: {chunk}\n{traceback.format_exc()}")
