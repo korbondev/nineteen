@@ -17,6 +17,7 @@ async def chat_stream(
     if task_config is None:
         raise ValueError(f"Task config not found for model: {decrypted_payload.model}")
     assert task_config.orchestrator_server_config.load_model_config is not None
+    print(f"Chat task config: {task_config}")
 
     model_name = task_config.orchestrator_server_config.load_model_config["model"]
     decrypted_payload.model = model_name
