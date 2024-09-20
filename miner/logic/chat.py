@@ -17,6 +17,8 @@ async def chat_stream(
     aiohttp_client: aiohttp.ClientSession, decrypted_payload: payload_models.ChatPayload, worker_config: WorkerConfig
 ) -> AsyncGenerator[str | None, Any]:
     
+    logger.info(f"Received chat payload: {decrypted_payload.model}")
+    
     address, _ = map_endpoint_with_override(None, decrypted_payload.model, None)
     if address is None:
         task_config = tcfg.get_enabled_task_config(decrypted_payload.model)
