@@ -1,13 +1,16 @@
 <div align="center">
 
-# **👀 nineteen [τ, τ] SN19**
-Giving access to Bittensor with Decentralized subnet inference at scale.
+# **👀 nineteen [τ, τ] SN19 - EAGER VALIDATOR EDITION**
+An override of Nineteen Validator code that allows you to specify a single miner to validate and to do so every minute.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 [Bittensor](https://bittensor.com/whitepaper)  •  [Discord](https://discord.gg/dR865yTPaZ) • [SN19](https://sn19.ai)  • [SN19 APP](https://app.sn19.ai)
 </div>
 
+
+# Eager Validator Instructions
+Set an enviroment variable of `TEST_MINER_HOTKEY` to your hotkey before running the validator and it will validate only your miner.
 
 # Subnet 19 👀
 Subnet 19 is decentralised inference of AI models. We call ourselves `Nineteen 👀`. Bittensor has the Nineteen of being the most powerful force in AI, powering the world through decentralisation. SN19 is all about fulfilling that `Nineteen` by getting decentralised AI into the hands of all.

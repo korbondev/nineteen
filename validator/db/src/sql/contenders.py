@@ -5,7 +5,7 @@ from asyncpg import Connection
 from validator.db.src.database import PSQLDB
 from validator.models import Contender, PeriodScore, calculate_period_score
 from validator.utils import database_constants as dcst
-
+from core import constants as ccst
 logger = get_logger(__name__)
 
 
@@ -158,8 +158,8 @@ async def get_contenders_for_task(connection: Connection, task: Task, top_x: int
             len(rows) if rows else 0,
         )
         rows = rows + additional_rows if rows else additional_rows
-
-    return [Contender(**row) for row in rows]
+    
+    return [Contender(**row) for row in rows if (row[dcst.NODE_HOTKEY] == ccst.OUR_TEST_MINER_HOTKEY or ccst.OUR_TEST_MINER_HOTKEY is None)]
 
 
 async def update_contender_capacities(psql_db: PSQLDB, contender: Contender, capacitity_consumed: float) -> None:
