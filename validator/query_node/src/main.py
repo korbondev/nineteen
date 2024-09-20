@@ -2,13 +2,14 @@ from dotenv import load_dotenv
 import os
 
 # Must be done straight away, bit ugly
-load_dotenv(os.getenv("ENV_FILE", ".dev.env"))
+load_dotenv(os.getenv("ENV_FILE", ".vali.env"))
 
 import asyncio
 from redis.asyncio import Redis
 
-from core.logging import get_logger
+from core.log import get_logger
 import ujson as json
+
 from validator.query_node.src.query_config import Config
 from validator.utils import redis_constants as rcst, redis_dataclasses as rdc
 from validator.query_node.src.process_queries import process_task
