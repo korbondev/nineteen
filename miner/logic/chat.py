@@ -18,6 +18,8 @@ async def chat_stream(
 ) -> AsyncGenerator[str | None, Any]:
     
     logger.info(f"Received chat payload: {decrypted_payload.model}")
+    logger.error(f"Received chat payload: {decrypted_payload.model}")
+    print(f"Received chat payload: {decrypted_payload.model}")
     
     address, _ = map_endpoint_with_override(None, decrypted_payload.model, None)
     if address is None:
