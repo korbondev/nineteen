@@ -1,6 +1,6 @@
 import asyncio
 from dataclasses import dataclass
-import json
+import ujson as json
 import random
 import time
 from typing import Dict, List
@@ -16,7 +16,7 @@ from validator.utils import contender_utils as putils
 from validator.utils import generic_constants as gcst
 from validator.utils import redis_constants as rcst
 from core import constants as ccst
-from core.logging import get_logger
+from core.log import get_logger
 
 logger = get_logger(__name__)
 

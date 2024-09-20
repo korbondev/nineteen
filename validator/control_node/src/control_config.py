@@ -3,7 +3,7 @@ import os
 from redis.asyncio import Redis
 
 from core import constants as ccst
-from core.logging import get_logger
+from core.log import get_logger
 
 from fiber.chain_interactions import interface
 from fiber.chain_interactions import chain_utils
@@ -18,7 +18,7 @@ from substrateinterface import SubstrateInterface, Keypair
 from dotenv import load_dotenv
 
 logger = get_logger(__name__)
-load_dotenv()
+load_dotenv(os.getenv("ENV_FILE", ".vali.env"))
 
 
 @dataclass

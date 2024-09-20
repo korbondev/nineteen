@@ -1,5 +1,5 @@
 from dataclasses import asdict
-import json
+import ujson as json
 from core.tasks import Task
 from validator.db.src.sql.contenders import fetch_all_contenders, fetch_contender
 from validator.db.src.database import PSQLDB
@@ -7,7 +7,7 @@ from validator.models import Contender
 from validator.utils import redis_constants as rcst
 from validator.utils import redis_utils as rutils, redis_dataclasses as rdc
 from redis.asyncio import Redis
-from core.logging import get_logger
+from core.log import get_logger
 import uuid
 from validator.utils import generic_constants as gcst
 
