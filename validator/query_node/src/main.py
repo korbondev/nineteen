@@ -8,7 +8,7 @@ import asyncio
 from redis.asyncio import Redis
 
 from core.log import get_logger
-import json
+import ujson as json
 from validator.query_node.src.query_config import Config
 from validator.utils import redis_constants as rcst, redis_dataclasses as rdc
 from validator.query_node.src.process_queries import process_task
