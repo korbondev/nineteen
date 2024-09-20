@@ -33,7 +33,7 @@ async def chat_stream(
 
     assert address is not None, f"Address for model: {decrypted_payload.model} is not set in env vars!"
 
-    logger.debug(f"Sending request to {address}")
+    logger.info(f"Sending request to {address}")
 
     timeout = aiohttp.ClientTimeout(total=3)
     async with aiohttp_client.post(address, json=decrypted_payload.model_dump(), raise_for_status=True, timeout=timeout) as resp:

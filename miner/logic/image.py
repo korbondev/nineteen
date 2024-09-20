@@ -23,7 +23,7 @@ async def get_image_from_server(
     body_dict["engine"] = engine
 
     try:
-        logger.debug(f"Sending request to {endpoint}")
+        logger.info(f"Sending request to {endpoint}")
         response = await aiohttp_client.post(endpoint, json=body_dict, timeout=timeout)
         response.raise_for_status()
         return await response.json()
