@@ -35,7 +35,7 @@ async def chat_stream(
 
     logger.info(f"Sending request to {address}")
 
-    timeout = aiohttp.ClientTimeout(total=3)
+    timeout = aiohttp.ClientTimeout(total=5)
     async with aiohttp_client.post(address, json=decrypted_payload.model_dump(), raise_for_status=True, timeout=timeout) as resp:
         if resp.status != 200:
             logger.error(f"Error in streaming text from the server: {resp.status}.")
