@@ -7,12 +7,14 @@ from core import tasks_config as tcfg
 from miner.config import WorkerConfig
 from miner.constants import map_endpoint_with_override
 
+from typing import AsyncGenerator, Any
+
 logger = get_logger(__name__)
 
 
 async def chat_stream(
     aiohttp_client: aiohttp.ClientSession, decrypted_payload: payload_models.ChatPayload, worker_config: WorkerConfig
-):
+) -> AsyncGenerator[str | None, Any]:
     
     address, _ = map_endpoint_with_override(None, decrypted_payload.model, None)
     if address is None:
@@ -33,7 +35,12 @@ async def chat_stream(
 
 
     async with aiohttp_client.post(address, json=decrypted_payload.model_dump(), timeout=3) as resp:
-        resp.raise_for_status()
+        if resp.status != 200:
+            logger.error(f"Error in streaming text from the server: {resp.status}.")
+            if resp.reason is not None:
+                resp.raise_for_status()
+                yield None
+
         async for chunk_enc in resp.content:
             chunk = None
             try:

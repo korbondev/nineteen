@@ -32,7 +32,7 @@ async def chat_completions(
         if first_chunk is None:
             raise HTTPException(status_code=500, detail="Error in streaming text from the server")
         else:
-            return StreamingResponse(async_chain(first_chunk, generator), media_type="text/event-stream")
+            return StreamingResponse(async_chain(first_chunk, generator), media_type="text/event-stream") # type: ignore
     except aiohttp.ClientError as e:
         logger.error(f"Error in streaming text from the server: {e}. ")
         raise HTTPException(status_code=500, detail=f"Error in streaming text from the server: {e}")
