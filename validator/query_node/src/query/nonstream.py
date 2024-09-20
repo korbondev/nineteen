@@ -1,4 +1,4 @@
-import json
+import ujson as json
 import time
 from httpx import Response
 from pydantic import ValidationError

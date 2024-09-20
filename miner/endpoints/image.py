@@ -24,7 +24,7 @@ async def _process_image_request(
     worker_config: WorkerConfig,
 ) -> payload_models.ImageResponse:
     image_response = await get_image_from_server(
-        httpx_client=fiber_config.httpx_client,
+        aiohttp_client=fiber_config.aiohttp_client,
         body=decrypted_payload,
         post_endpoint=post_endpoint,
         worker_config=worker_config,
