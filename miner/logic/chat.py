@@ -8,7 +8,6 @@ from miner.config import WorkerConfig
 from miner.constants import map_endpoint_with_override
 
 from typing import AsyncGenerator, Any
-from asyncio import CancelledError as asyncio_CancelledError
 
 logger = get_logger(__name__)
 
@@ -35,26 +34,22 @@ async def chat_stream(
     assert address is not None, f"Address for model: {decrypted_payload.model} is not set in env vars!"
 
     
-    try:
-        async with aiohttp_client.post(address, json=decrypted_payload.model_dump(), timeout=3, raise_for_status=True) as resp:
-            if resp.status != 200:
-                logger.error(f"Error in streaming text from the server: {resp.status}.")
-                yield None
+    async with aiohttp_client.post(address, json=decrypted_payload.model_dump(), raise_for_status=True) as resp:
+        if resp.status != 200:
+            logger.error(f"Error in streaming text from the server: {resp.status}.")
+            yield None
 
-            async for chunk_enc in resp.content:
-                chunk = None
-                try:
-                    chunk = chunk_enc.decode()
-                    for event in chunk.split("\n\n"):
-                        if not event.strip():
-                            continue
-                        prefix, _, data = event.partition(":")
-                        if data.strip() == "[DONE]":
-                            break
-                        yield f"data: {data}\n\n"
-                except Exception as e:
-                    logger.error(f"Error in streaming text from the server: {e}. Original chunk: {chunk}\n{traceback.format_exc()}")
-                    yield None
-    except asyncio_CancelledError:
-        logger.error("aiohttp failed to raise an error correctly")
-        yield None
+        async for chunk_enc in resp.content:
+            chunk = None
+            try:
+                chunk = chunk_enc.decode()
+                for event in chunk.split("\n\n"):
+                    if not event.strip():
+                        continue
+                    prefix, _, data = event.partition(":")
+                    if data.strip() == "[DONE]":
+                        break
+                    yield f"data: {data}\n\n"
+            except Exception as e:
+                logger.error(f"Error in streaming text from the server: {e}. Original chunk: {chunk}\n{traceback.format_exc()}")
+                yield None
