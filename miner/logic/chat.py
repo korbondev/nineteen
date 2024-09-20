@@ -33,12 +33,10 @@ async def chat_stream(
 
     assert address is not None, f"Address for model: {decrypted_payload.model} is not set in env vars!"
 
-
+    
     async with aiohttp_client.post(address, json=decrypted_payload.model_dump(), timeout=3) as resp:
         if resp.status != 200:
             logger.error(f"Error in streaming text from the server: {resp.status}.")
-            # if resp.reason is not None:
-            #     resp.raise_for_status()
             yield None
 
         async for chunk_enc in resp.content:
@@ -54,3 +52,4 @@ async def chat_stream(
                     yield f"data: {data}\n\n"
             except Exception as e:
                 logger.error(f"Error in streaming text from the server: {e}. Original chunk: {chunk}\n{traceback.format_exc()}")
+                yield None

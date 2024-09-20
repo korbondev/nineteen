@@ -15,6 +15,7 @@ from miner.config import WorkerConfig
 from miner.dependencies import get_worker_config
 
 from validator.utils.generic_utils import async_chain
+from asyncio import TimeoutError as syncio_TimeoutError
 
 logger = get_logger(__name__)
 
@@ -28,7 +29,12 @@ async def chat_completions(
 ) -> StreamingResponse:  # sourcery skip: raise-from-previous-error
     try:
         generator = chat_stream(config.aiohttp_client, decrypted_payload, worker_config)
-        first_chunk = await generator.__anext__()
+
+        try:
+            first_chunk = await generator.__anext__()
+        except syncio_TimeoutError:
+            first_chunk = None
+
         if first_chunk is None:
             raise HTTPException(status_code=500, detail="Error in streaming text from the server")
         else:
