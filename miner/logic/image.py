@@ -1,7 +1,7 @@
 import ujson as json
 import aiohttp
 from pydantic import BaseModel
-from core.logging import get_logger
+from core.log import get_logger
 from miner.config import WorkerConfig
 from miner.constants import map_endpoint_with_override
 
