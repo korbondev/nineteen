@@ -37,8 +37,8 @@ async def chat_stream(
     async with aiohttp_client.post(address, json=decrypted_payload.model_dump(), timeout=3) as resp:
         if resp.status != 200:
             logger.error(f"Error in streaming text from the server: {resp.status}.")
-            if resp.reason is not None:
-                resp.raise_for_status()
+            # if resp.reason is not None:
+            #     resp.raise_for_status()
             yield None
 
         async for chunk_enc in resp.content:
