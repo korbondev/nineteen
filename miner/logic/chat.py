@@ -39,7 +39,7 @@ async def chat_stream(
             logger.error(f"Error in streaming text from the server: {resp.status}.")
             if resp.reason is not None:
                 resp.raise_for_status()
-                yield None
+            yield None
 
         async for chunk_enc in resp.content:
             chunk = None
