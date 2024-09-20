@@ -27,6 +27,11 @@ async def chat_completions(
     config: Config = Depends(get_config),
     worker_config: WorkerConfig = Depends(get_worker_config),
 ) -> StreamingResponse:  # sourcery skip: raise-from-previous-error
+    
+    logger.info(f"in chat_completions() decrypted_payload.model: {decrypted_payload.model}")
+    logger.error(f"in chat_completions() decrypted_payload.model: {decrypted_payload.model}")
+    print(f"in chat_completions() decrypted_payload.model: {decrypted_payload.model}")
+    quit()
     try:
         generator = chat_stream(config.aiohttp_client, decrypted_payload, worker_config)
 
