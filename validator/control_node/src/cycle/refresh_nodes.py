@@ -92,6 +92,8 @@ async def perform_handshakes(nodes: list[Node], config: Config) -> list[Node]:
             tasks.append(_handshake(config, node, config.httpx_client))
 
     nodes = await asyncio.gather(*tasks)
+    
+    logger.debug(f" Nodes with successful handshakes: {nodes}")
 
     async with await config.psql_db.connection() as connection:
         await insert_symmetric_keys_for_nodes(connection, nodes)
