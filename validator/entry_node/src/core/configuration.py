@@ -32,6 +32,9 @@ async def factory_config() -> Config:
         os.environ["POSTGRES_HOST"] = "localhost"
     else:
         redis_host = os.getenv("REDIS_HOST", "redis")
+        
+    os.environ["POSTGRES_HOST"] = "postgresql"
+    redis_host = "redis"
 
     psql_db = PSQLDB()
     await psql_db.connect()
