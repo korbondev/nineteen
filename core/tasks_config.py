@@ -75,7 +75,7 @@ TASK_TO_CONFIG: dict[Task, FullTaskConfig] = {
                 "model": "unsloth/Meta-Llama-3.1-8B-Instruct",
                 "half_precision": True,
                 "tokenizer": "tau-vision/llama-tokenizer-fix",
-                "max_model_len": 16000,
+                "max_model_len": 20_000,
                 "gpu_utilization": 0.6,
             },
             endpoint=Endpoints.chat_completions.value,
@@ -85,7 +85,7 @@ TASK_TO_CONFIG: dict[Task, FullTaskConfig] = {
         synthetic_generation_config=SyntheticGenerationConfig(
             func="generate_chat_synthetic", kwargs={"model": Task.chat_llama_3_1_8b.value}
         ),
-        endpoint="/chat/completions",
+        endpoint=Endpoints.chat_completions.value,
         volume_to_requests_conversion=300,
         is_stream=True,
         weight=0.1,
@@ -104,6 +104,8 @@ TASK_TO_CONFIG: dict[Task, FullTaskConfig] = {
                 "model": "hugging-quants/Meta-Llama-3.1-70B-Instruct-AWQ-INT4",
                 "half_precision": True,
                 "tokenizer": "tau-vision/llama-3-tokenizer-fix",
+                "max_model_len": 16_000,
+                "gpu_utilization": 0.6,
             },
             endpoint=Endpoints.chat_completions.value,
             checking_function="check_text_result",
@@ -112,12 +114,12 @@ TASK_TO_CONFIG: dict[Task, FullTaskConfig] = {
         synthetic_generation_config=SyntheticGenerationConfig(
             func="generate_chat_synthetic", kwargs={"model": Task.chat_llama_3_1_70b.value}
         ),
-        endpoint="/chat/completions",
+        endpoint=Endpoints.chat_completions.value,
         volume_to_requests_conversion=300,
         is_stream=True,
         weight=0.1,
         timeout=2,
-        enabled=False,
+        enabled=True,
     ),
     Task.proteus_text_to_image: FullTaskConfig(
         task=Task.proteus_text_to_image,
@@ -165,7 +167,7 @@ TASK_TO_CONFIG: dict[Task, FullTaskConfig] = {
         is_stream=False,
         weight=0.1,
         timeout=20,
-        enabled=False,
+        enabled=True,
     ),
     Task.flux_schnell_text_to_image: FullTaskConfig(
         task=Task.flux_schnell_text_to_image,
@@ -189,7 +191,7 @@ TASK_TO_CONFIG: dict[Task, FullTaskConfig] = {
         is_stream=False,
         weight=0.1,
         timeout=20,
-        enabled=False,
+        enabled=True,
     ),
     Task.flux_schnell_image_to_image: FullTaskConfig(
         task=Task.flux_schnell_image_to_image,
@@ -213,7 +215,7 @@ TASK_TO_CONFIG: dict[Task, FullTaskConfig] = {
         is_stream=False,
         weight=0.1,
         timeout=15,
-        enabled=False,
+        enabled=True,
     ),
     Task.avatar: FullTaskConfig(
         task=Task.avatar,
@@ -235,7 +237,7 @@ TASK_TO_CONFIG: dict[Task, FullTaskConfig] = {
         is_stream=False,
         weight=0.1,
         timeout=15,
-        enabled=False,
+        enabled=True,
     ),
     Task.dreamshaper_text_to_image: FullTaskConfig(
         task=Task.dreamshaper_text_to_image,
@@ -259,7 +261,7 @@ TASK_TO_CONFIG: dict[Task, FullTaskConfig] = {
         is_stream=False,
         weight=0.1,
         timeout=5,
-        enabled=False,
+        enabled=True,
     ),
     Task.dreamshaper_image_to_image: FullTaskConfig(
         task=Task.dreamshaper_image_to_image,
@@ -283,7 +285,7 @@ TASK_TO_CONFIG: dict[Task, FullTaskConfig] = {
         is_stream=False,
         weight=0.1,
         timeout=15,
-        enabled=False,
+        enabled=True,
     ),
     Task.inpaint: FullTaskConfig(
         task=Task.inpaint,
@@ -307,7 +309,7 @@ TASK_TO_CONFIG: dict[Task, FullTaskConfig] = {
         is_stream=False,
         weight=0.1,
         timeout=15,
-        enabled=False,
+        enabled=True,
     ),
 }
 
