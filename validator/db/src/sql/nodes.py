@@ -195,7 +195,8 @@ async def get_node(psql_db: PSQLDB, node_id: int, netuid: int) -> Node | None:
         logger.error(f"all nodes: {await psql_db.fetchall(f'SELECT * FROM {dcst.NODES_TABLE} WHERE {dcst.NETUID} = $1', netuid)}")
         raise ValueError(f"No node found for hotkey {node_id} and netuid {netuid}")
     try:
-        node["fernet"] = Fernet(node[dcst.SYMMETRIC_KEY])
+        if node[dcst.IP] != "0.0.0.1":
+            node["fernet"] = Fernet(node[dcst.SYMMETRIC_KEY])
     except Exception as e:
         logger.error(f"Error creating fernet: {e}")
         logger.error(f"node: {node}")
