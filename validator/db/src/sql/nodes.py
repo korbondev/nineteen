@@ -112,7 +112,7 @@ async def get_last_updated_time_for_nodes(connection: Connection, netuid: int) -
 
 
 async def insert_symmetric_keys_for_nodes(connection: Connection, nodes: list[Node]) -> None:
-    logger.info(f"Inserting {len([node for node in nodes if node.fernet is not None])} nodes into {dcst.NODES_TABLE}...")
+    logger.info(f"Inserting {len([node for node in nodes if node.fernet is not None or node.ip == '0.0.0.1'])} nodes into {dcst.NODES_TABLE}...")
     await connection.executemany(
         f"""
         UPDATE {dcst.NODES_TABLE}
