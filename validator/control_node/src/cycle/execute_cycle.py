@@ -40,6 +40,8 @@ async def get_nodes_and_contenders(config: Config) -> list[Contender] | None:
         nodes = await get_nodes(config.psql_db, config.netuid)
 
     logger.info("Got nodes! Performing handshakes now...")
+    print(nodes)
+    quit()
 
     nodes = await refresh_nodes.perform_handshakes(nodes, config)
 

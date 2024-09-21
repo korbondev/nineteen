@@ -26,8 +26,6 @@ async def get_and_store_nodes(config: Config) -> list[Node]:
             return await get_nodes(config.psql_db, config.netuid)
 
     nodes = await fetch_nodes_from_substrate(config)
-    print(nodes)
-    quit()
 
 
     await store_nodes(config, nodes)
