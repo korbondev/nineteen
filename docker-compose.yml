@@ -19,6 +19,8 @@ services:
     env_file:
       - .vali.env
     container_name: control_node
+    environment:
+      TEST_MINER_HOTKEY: ${TEST_MINER_HOTKEY}
     deploy:
       restart_policy:
         condition: on-failure
