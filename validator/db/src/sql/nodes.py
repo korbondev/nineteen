@@ -112,7 +112,7 @@ async def get_last_updated_time_for_nodes(connection: Connection, netuid: int) -
 
 
 async def insert_symmetric_keys_for_nodes(connection: Connection, nodes: list[Node]) -> None:
-    logger.info(f"Inserting {len([node for node in nodes if node.fernet is not None or node.ip == '0.0.0.1'])} nodes into {dcst.NODES_TABLE}...")
+    logger.info(f"Inserting {len([node for node in nodes if node.fernet is not None])} nodes into {dcst.NODES_TABLE}...")
     await connection.executemany(
         f"""
         UPDATE {dcst.NODES_TABLE}
@@ -122,7 +122,7 @@ async def insert_symmetric_keys_for_nodes(connection: Connection, nodes: list[No
         [
             (futils.fernet_to_symmetric_key(node.fernet), node.symmetric_key_uuid, node.hotkey, node.netuid)
             for node in nodes
-            if node.fernet is not None or node.ip == '0.0.0.1'
+            if node.fernet is not None
         ],
     )
 
@@ -195,10 +195,7 @@ async def get_node(psql_db: PSQLDB, node_id: int, netuid: int) -> Node | None:
         logger.error(f"all nodes: {await psql_db.fetchall(f'SELECT * FROM {dcst.NODES_TABLE} WHERE {dcst.NETUID} = $1', netuid)}")
         raise ValueError(f"No node found for hotkey {node_id} and netuid {netuid}")
     try:
-        if node[dcst.IP] != "0.0.0.1":
-            node["fernet"] = Fernet(node[dcst.SYMMETRIC_KEY])
-        else:
-            node["fernet"] = None
+        node["fernet"] = Fernet(node[dcst.SYMMETRIC_KEY])
     except Exception as e:
         logger.error(f"Error creating fernet: {e}")
         logger.error(f"node: {node}")
