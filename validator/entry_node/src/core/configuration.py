@@ -26,7 +26,8 @@ class Config:
 @cached(ttl=None)
 async def factory_config() -> Config:
     localhost = bool(os.getenv("LOCALHOST", "false").lower() == "true")
-    if localhost:
+    #if localhost:
+    if False:
         redis_host = "localhost"
         os.environ["POSTGRES_HOST"] = "localhost"
     else:
