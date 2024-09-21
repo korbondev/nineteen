@@ -9,3 +9,4 @@ markovify==0.9.4
 colorama==0.4.6
 asyncpg==0.29.0
 # numpy==1.26.4
+ujson==5.*
