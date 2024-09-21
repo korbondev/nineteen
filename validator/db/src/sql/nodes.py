@@ -197,6 +197,8 @@ async def get_node(psql_db: PSQLDB, node_id: int, netuid: int) -> Node | None:
     try:
         if node[dcst.IP] != "0.0.0.1":
             node["fernet"] = Fernet(node[dcst.SYMMETRIC_KEY])
+        else:
+            node["fernet"] = None
     except Exception as e:
         logger.error(f"Error creating fernet: {e}")
         logger.error(f"node: {node}")
