@@ -21,6 +21,7 @@ class PSQLDB:
         self.pool: Pool | None = None
 
     async def connect(self) -> None:
+        logger.debug("Fetching connection string from env!!!!!!!!!!!!!!!!!!!!")
         logger.debug(f"Connecting to {self.connection_string}....")
         if self.pool is None:
             try:
