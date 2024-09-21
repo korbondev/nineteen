@@ -57,14 +57,11 @@ def load_config() -> Config:
         netuid = int(netuid)
 
     localhost = bool(os.getenv("LOCALHOST", "false").lower() == "true")
-    #if localhost:
-    if False:
+    if localhost:
         redis_host = "localhost"
         os.environ["POSTGRES_HOST"] = "localhost"
     else:
         redis_host = os.getenv("REDIS_HOST", "redis")
-    os.environ["POSTGRES_HOST"] = "postgresql"
-    redis_host = "redis"
 
     replace_with_docker_localhost = bool(os.getenv("REPLACE_WITH_DOCKER_LOCALHOST", "false").lower() == "true")
 
