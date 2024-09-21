@@ -20,7 +20,7 @@ async def chat_stream(
     logger.info(f"in chat_stream() decrypted_payload.model: {decrypted_payload.model}")
     logger.error(f"in chat_stream() decrypted_payload.model: {decrypted_payload.model}")
     print(f"in chat_stream() decrypted_payload.model: {decrypted_payload.model}")
-    quit()
+    #quit()
     
     address, _ = map_endpoint_with_override(None, decrypted_payload.model, None)
     if address is None:
