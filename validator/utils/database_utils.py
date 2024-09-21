@@ -19,10 +19,6 @@ def get_connection_string_from_env() -> str:
 
     port = int(port)
 
-    raise ValueError(
-        f"Using POSTGRES_USER={username}, POSTGRES_PASSWORD=*****, POSTGRES_DB={database}, POSTGRES_PORT={port}, POSTGRES_HOST={host}"
-    )
-
 
     if not all([username, password, host, port, database]):
         raise ValueError(

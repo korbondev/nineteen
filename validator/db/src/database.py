@@ -13,6 +13,7 @@ logger = get_logger(__name__)
 class PSQLDB:
     def __init__(self, from_env: bool = True, connection_string: str | None = None):
         if from_env:
+            logger.debug("Fetching connection string from env!!!!!!!!!!!!!!!!!!!!")
             connection_string = dutils.get_connection_string_from_env()
         elif connection_string is None:
             raise ValueError("Either from_env must be True or connection_string must be set")
