@@ -34,7 +34,7 @@ docker-compose --env-file .vali.env -f docker-compose.yml -f docker-compose.util
 python -m venv .venv || python3 -m venv .venv
 source .venv/bin/activate
 find . -name "requirements.txt" -exec pip install -r {} \;
-pip install --no-cache-dir git+https://github.com/rayonlabs/fiber.git
+pip install --no-cache-dir git+https://github.com/korbondev/fiber.git
 task dev_setup
 task control_node_dev  # For example
 ```
@@ -43,7 +43,7 @@ task control_node_dev  # For example
 
 ```bash
 cd ..
-git clone https://github.com/rayonlabs/fiber.git
+git clone https://github.com/korbondev/fiber.git
 cd fiber
 git pull
 pip install -e .

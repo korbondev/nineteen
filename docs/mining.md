@@ -20,7 +20,7 @@ The proxy server is the server which has your hotkey, and spins up the NODE (sho
 
 # Worker server setup
 
-Documentation for all the workers is contained here https://github.com/namoray/vision-workers
+Documentation for all the workers is contained here https://github.com/korbondev/vision-workers
 
 # Proxy server setup
 
@@ -31,7 +31,7 @@ Get a CPU VM (Digital Ocean Droplet, OVH, Vultr, etc) - make sure you have an op
 ### Clone the repo
 
 ```bash
-git clone https://github.com/namoray/nineteen.git
+git clone https://github.com/korbondev/nineteen.git
 cd nineteen
 ```
 

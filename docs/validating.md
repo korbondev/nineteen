@@ -2,7 +2,6 @@
 
 Welcome to SN19 Validating 🔥
 
-
 ## Contents:
 
 - [Proxy server setup](#proxy-server-setup)
@@ -18,24 +17,23 @@ Validating on ninteen is special.
 
 Not only do you validate miners are behaving, set some weights and get some tao - you also get to sell your access to these miners 🤩
 
-
 A Validator consists of two parts:
 
 - Proxy API server
 - Orchestrator server
 
-The proxy server is the server which has your hotkey,  spins up the NODE, allows you to sell your bandwidth, etc. 
+The proxy server is the server which has your hotkey, spins up the NODE, allows you to sell your bandwidth, etc.
 
 The Orchestrator performs the checking tasks, to make sure the miners are behaving 🫡
 
-
 # Proxy server setup
 
-Get a CPU VM (Digital Ocean Droplet, OVH, Vultr, etc)  - make sure you have an open port if you want to run a organic API server.
+Get a CPU VM (Digital Ocean Droplet, OVH, Vultr, etc) - make sure you have an open port if you want to run a organic API server.
 
 **Clone the repo**
+
 ```bash
-git clone https://github.com/namoray/nineteen.git
+git clone https://github.com/korbondev/nineteen.git
 cd nineteen
 ```
 
@@ -49,26 +47,27 @@ If you are in a container, run these:
 sudo -E ./bootstrap.sh
 source $HOME/.bashrc
 ```
+
 Your server will now automatically be running - but it wont work until the config has been created
 
 **Without autoupdates :-(**
 
 If you are concerned about running autoupdates because of security, please message me and I'm sure we can work something out!
-```bash
-WITH_AUTOUPDATES=0 sudo -E ./bootstrap.sh 
-```
 
+```bash
+WITH_AUTOUPDATES=0 sudo -E ./bootstrap.sh
+```
 
 ## Get hot and coldkeys onto your machine
 
 Securely move them onto your machine as usual. Either with the btcli or with a secure method of your choosing.
-
 
 ## Create the necessary config
 
 ```bash
 python core/create_config.py
 ```
+
 If you're running the autoupdater, then you should be running!
 
 ## Start the services if you don't have autoupdates
@@ -83,10 +82,9 @@ See [helpful commands](./helpful-commands.md) for more information on the docker
 
 ## Starting the Orchestrator server
 
-Currently, a bare metal GPU is necessary for validating the GPU models. Please see here for the full instructions!(https://github.com/namoray/vision-workers/tree/main/validator_orchestrator#readme)
+Currently, a bare metal GPU is necessary for validating the GPU models. Please see here for the full instructions!(https://github.com/korbondev/vision-workers/tree/main/validator_orchestrator#readme)
 
 Once this is done, make a note of the IP address of that machine, and the port the orchestrator is running on (the default is 6920, if you didn't change anything)
-
 
 # Managing organic access
 
