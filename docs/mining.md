@@ -40,7 +40,7 @@ cd nineteen
 ```bash
 NO_LAUNCH=1 sudo -E ./bootstrap.sh
 source $HOME/.bashrc
-pip install git+https://github.com/rayonlabs/fiber.git
+pip install git+https://github.com/korbondev/fiber.git
 ```
 
 ### Get hot and coldkeys onto your machine
