@@ -13,5 +13,5 @@ class Task(Enum):
     flux_schnell_image_to_image = "flux-schnell-image-to-image"
     inpaint = "inpaint"
     avatar = "avatar"
-    
-unique_tasks = set(i.value for i in Task)
+
+unique_tasks = {i.value for i in Task}
