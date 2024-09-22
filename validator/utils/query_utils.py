@@ -1,5 +1,5 @@
 
-import json
+import ujson as json
 from typing import Any
 
 

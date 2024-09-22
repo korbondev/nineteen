@@ -1,6 +1,6 @@
 import asyncio
 from dataclasses import dataclass
-import json
+import ujson as json
 import random
 import time
 from typing import Dict, List

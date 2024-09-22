@@ -69,6 +69,7 @@ async def _handshake(config: Config, node: Node, async_client: httpx.AsyncClient
         replace_with_docker_localhost=config.replace_with_docker_localhost,
         replace_with_localhost=config.replace_with_localhost,
     )
+    logger.debug(f"Handshaking with {server_address}, node: {node}")
 
     try:
         symmetric_key, symmetric_key_uid = await handshake.perform_handshake(async_client, server_address, config.keypair)
@@ -91,6 +92,8 @@ async def perform_handshakes(nodes: list[Node], config: Config) -> list[Node]:
             tasks.append(_handshake(config, node, config.httpx_client))
 
     nodes = await asyncio.gather(*tasks)
+    
+    logger.debug(f" Nodes with successful handshakes: {nodes}")
 
     async with await config.psql_db.connection() as connection:
         await insert_symmetric_keys_for_nodes(connection, nodes)
