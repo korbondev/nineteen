@@ -7,7 +7,7 @@ from fiber.logging_utils import get_logger
 
 logger = get_logger(__name__)
 
-async def main(wallet_name: str, hotkey_name: str, server_address: str = None, miner_uid: int = None):
+async def main(wallet_name: str, hotkey_name: str, server_address: str = "", miner_uid: int = 0):
     keypair = chain_utils.load_hotkey_keypair(wallet_name, hotkey_name)
     httpx_client = httpx.AsyncClient()
     logger.debug(f"Performing handshake with server at {server_address}")
