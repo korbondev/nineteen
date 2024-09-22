@@ -44,8 +44,7 @@ async def markov_model_factory():
 
 @lru_cache(maxsize=1)
 def image_cache_factory() -> diskcache.Cache:
-    cache = diskcache.Cache("./cache/image_cache")
-    return cache
+    return diskcache.Cache("./cache/image_cache")
 
 
 async def _get_markov_sentence(max_words: int = 10) -> str:
@@ -59,8 +58,7 @@ async def _get_markov_sentence(max_words: int = 10) -> str:
 def base64_to_pil(image_b64: str) -> Image.Image | None:
     try:
         image_data = base64.b64decode(image_b64)
-        image = Image.open(io.BytesIO(image_data))
-        return image
+        return Image.open(io.BytesIO(image_data))
     except binascii.Error:
         return None
 
@@ -68,9 +66,7 @@ def base64_to_pil(image_b64: str) -> Image.Image | None:
 def _load_postie_to_pil(image_path: str) -> Image.Image | None:
     with open(image_path, "rb") as image_file:
         base64_string = base64.b64encode(image_file.read()).decode("utf-8")
-    pil_image = base64_to_pil(base64_string)
-
-    return pil_image
+    return base64_to_pil(base64_string)
 
 
 def get_randomly_edited_face_picture_for_avatar() -> str | None:
@@ -91,17 +87,13 @@ def get_randomly_edited_face_picture_for_avatar() -> str | None:
 
 
 def _alter_my_boy_postie(my_boy_postie: Image.Image | None) -> str | None:
-    if my_boy_postie is None:
-        return None
-    b64_postie_altered = alter_image(my_boy_postie)
-    return b64_postie_altered
+    return None if my_boy_postie is None else alter_image(my_boy_postie)
 
 
 def pil_to_base64(image: Image.Image, format: str = "JPEG") -> str | None:
     buffered = io.BytesIO()
     image.save(buffered, format=format)
-    img_str = base64.b64encode(buffered.getvalue()).decode()
-    return img_str
+    return base64.b64encode(buffered.getvalue()).decode()
 
 
 def alter_image(
@@ -122,8 +114,7 @@ def alter_image(
     if pil_image.mode == "RGBA":
         pil_image = pil_image.convert("RGB")
 
-    new_image = pil_to_base64(pil_image)
-    return new_image
+    return pil_to_base64(pil_image)
 
 
 async def generate_chat_synthetic(model: str) -> payload_models.ChatPayload:
