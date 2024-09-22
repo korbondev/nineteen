@@ -90,7 +90,7 @@ TASK_TO_CONFIG: dict[Task, FullTaskConfig] = {
         is_stream=True,
         weight=0.1,
         timeout=2,
-        enabled=False,
+        enabled=True,
     ),
     Task.chat_llama_3_1_70b: FullTaskConfig(
         task=Task.chat_llama_3_1_70b,
@@ -143,7 +143,7 @@ TASK_TO_CONFIG: dict[Task, FullTaskConfig] = {
         is_stream=False,
         weight=0.1,
         timeout=5,
-        enabled=False,
+        enabled=True,
     ),
     Task.proteus_image_to_image: FullTaskConfig(
         task=Task.proteus_image_to_image,
