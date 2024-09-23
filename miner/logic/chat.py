@@ -25,22 +25,17 @@ async def chat_stream(
         raise ValueError(f"Task config not found for model: {decrypted_payload.model}")
     assert task_config.orchestrator_server_config.load_model_config is not None
     model_name = task_config.orchestrator_server_config.load_model_config["model"]
+    decrypted_payload.model = model_name # needed for vllm endpoint
     
+    # if task_config.task == Task.chat_llama_3_1_8b:
+    #     address = worker_config.LLAMA_3_1_8B_TEXT_WORKER_URL
+    # elif task_config.task == Task.chat_llama_3_1_70b:
+    #     address = worker_config.LLAMA_3_1_70B_TEXT_WORKER_URL
+    # else:
+    #     raise ValueError(f"Invalid model: {decrypted_payload.model}")    
 
-    if task_config.task == Task.chat_llama_3_1_8b:
-        address = worker_config.LLAMA_3_1_8B_TEXT_WORKER_URL
-    elif task_config.task == Task.chat_llama_3_1_70b:
-        address = worker_config.LLAMA_3_1_70B_TEXT_WORKER_URL
-    else:
-        raise ValueError(f"Invalid model: {decrypted_payload.model}")
-    
-    decrypted_payload.model = model_name
-
-    address, _ = map_endpoint_with_override(None, task_config.task.value, None)
-    
+    address, _ = map_endpoint_with_override(None, task_config.task.value, None)    
     assert address is not None, f"Address for model: {task_config.task.value} is not set in env vars!"
-
-    logger.info(f"Sending request to {address} for model: {decrypted_payload.model}")
 
     timeout = aiohttp.ClientTimeout(total=5)
     async with aiohttp_client.post(address, json=decrypted_payload.model_dump(), raise_for_status=True, timeout=timeout) as resp:
