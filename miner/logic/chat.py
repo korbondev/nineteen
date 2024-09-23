@@ -35,29 +35,22 @@ async def chat_stream(
     # Determine the address of the chat server to send the request to
     logger.info(f"in chat_stream() decrypted_payload.model: {decrypted_payload.model}")
 
-    address, _ = map_endpoint_with_override(None, decrypted_payload.model, None)
-    if address is None:
-        task_config = tcfg.get_enabled_task_config(decrypted_payload.model)
-        if task_config is None:
-            raise ValueError(f"Task config not found for model: {decrypted_payload.model}")
-        assert task_config.orchestrator_server_config.load_model_config is not None
+    task_config = tcfg.get_enabled_task_config(decrypted_payload.model)
+    if task_config is None:
+        raise ValueError(f"Task config not found for model: {decrypted_payload.model}")
+    assert task_config.orchestrator_server_config.load_model_config is not None
+    model_name = task_config.orchestrator_server_config.load_model_config["model"]
+    decrypted_payload.model = model_name  # needed for vllm endpoint
 
-        # decrypted_payload.model = task_config.orchestrator_server_config.load_model_config["model"]
-        if task_config.orchestrator_server_config.load_model_config["model"] == "unsloth/Meta-Llama-3.1-8B-Instruct":
-            address = worker_config.LLAMA_3_1_8B_TEXT_WORKER_URL
-        elif (
-            task_config.orchestrator_server_config.load_model_config["model"]
-            == "hugging-quants/Meta-Llama-3.1-70B-Instruct-AWQ-INT4"
-        ):
-            address = worker_config.LLAMA_3_1_70B_TEXT_WORKER_URL
-        elif task_config.orchestrator_server_config.load_model_config["model"] == "mattshumer/reflection-70b":
-            address = worker_config.REFLECTION_70B_TEXT_WORKER_URL
-        else:
-            raise ValueError(f"Invalid model: {decrypted_payload.model}")
+    # if task_config.task == Task.chat_llama_3_1_8b:
+    #     address = worker_config.LLAMA_3_1_8B_TEXT_WORKER_URL
+    # elif task_config.task == Task.chat_llama_3_1_70b:
+    #     address = worker_config.LLAMA_3_1_70B_TEXT_WORKER_URL
+    # else:
+    #     raise ValueError(f"Invalid model: {decrypted_payload.model}")
 
-    assert address is not None, f"Address for model: {decrypted_payload.model} is not set in env vars!"
-
-    logger.info(f"Sending request to {address}")
+    address, _ = map_endpoint_with_override(None, task_config.task.value, None)
+    assert address is not None, f"Address for model: {task_config.task.value} is not set in env vars!"
 
     # Send the request to the chat server
     timeout = aiohttp.ClientTimeout(total=client_timeout)
