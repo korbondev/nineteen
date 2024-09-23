@@ -18,7 +18,7 @@ async def chat_stream(
     aiohttp_client: aiohttp.ClientSession,
     decrypted_payload: payload_models.ChatPayload,
     worker_config: WorkerConfig,
-    client_timeout: float = 5.0,
+    client_timeout: float = 30.0,
 ) -> AsyncGenerator[str, Any]:
     """
     Stream the chat interaction with the chat server.
