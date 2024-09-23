@@ -14,8 +14,8 @@ from fiber.miner.dependencies import get_config
 from miner.config import WorkerConfig
 from miner.dependencies import get_worker_config
 
-from validator.utils.generic.generic_utils import async_chain
-from asyncio import TimeoutError as syncio_TimeoutError
+from asyncio import TimeoutError as asyncio_TimeoutError
+
 from contextlib import aclosing as async_ensure_close_context
 
 logger = get_logger(__name__)
@@ -25,23 +25,20 @@ async def chat_completions(
     decrypted_payload: payload_models.ChatPayload = Depends(partial(decrypt_general_payload, payload_models.ChatPayload)),
     config: Config = Depends(get_config),
     worker_config: WorkerConfig = Depends(get_worker_config),
-) -> StreamingResponse:  # sourcery skip: raise-from-previous-error
-    
-    #logger.info("in chat_completions() got this far")
-    try:
-        async with async_ensure_close_context(chat_stream(config.aiohttp_client, decrypted_payload, worker_config)) as generator:
-            try:
-                first_chunk = await generator.__anext__()
-            except syncio_TimeoutError:
-                first_chunk = None
+) -> StreamingResponse:
+    logger.info("in chat_completions() starting generator StreamingResponse")
 
-            if first_chunk is not None:
-                return StreamingResponse(async_chain(first_chunk, generator), media_type="text/event-stream")  # type: ignore
-            logger.error("First chunk was None")
-            raise HTTPException(status_code=500, detail="Error in streaming text from the server")
+    try:
+        async with async_ensure_close_context(chat_stream(config.aiohttp_client, decrypted_payload, worker_config)) as async_gen:
+            try:
+                return StreamingResponse(async_gen, media_type="text/event-stream")
+            except asyncio_TimeoutError as e:
+                logger.error(f"Timeout Error in streaming text from the server: {e}. ")
+                raise HTTPException(status_code=500, detail="Error in streaming text from the server") from e
+
     except aiohttp.ClientError as e:
-        logger.error(f"Error in streaming text from the server: {e}. ")
-        raise HTTPException(status_code=500, detail=f"Error in streaming text from the server: {e}")
+        logger.error(f"aiohttp.ClientError Error in streaming text from the server: {e}. ")
+        raise HTTPException(status_code=500, detail=f"Error in streaming text from the server: {e}") from e
 
 
 def factory_router() -> APIRouter:
