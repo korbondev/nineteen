@@ -37,7 +37,7 @@ async def chat_stream(
     address, _ = map_endpoint_with_override(None, task_config.task.value, None)    
     assert address is not None, f"Address for model: {task_config.task.value} is not set in env vars!"
 
-    timeout = aiohttp.ClientTimeout(total=5)
+    timeout = aiohttp.ClientTimeout(total=30)
     async with aiohttp_client.post(address, json=decrypted_payload.model_dump(), raise_for_status=True, timeout=timeout) as resp:
         if resp.status != 200:
             logger.error(f"Error in streaming text from the server: {resp.status}.")
