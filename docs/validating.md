@@ -64,16 +64,23 @@ Securely move them onto your machine as usual. Either with the btcli or with a s
 
 ## Create the necessary config
 
+
 ```bash
 python core/create_config.py
 ```
+(^ Add --dev flag if you are a developer on nineteen)
 
 If you're running the autoupdater, then you should be running!
+
+Check your autoupdater to see the docker containers building (might take a few minutes on first build)
+```bash
+pm2 logs validator_autoupdater
+```
 
 ## Start the services if you don't have autoupdates
 
 ```bash
-docker-compose --env-file .vali.env -f docker-compose.yml up -d
+docker compose --env-file .vali.env -f docker-compose.yml up -d --build
 ```
 
 See [helpful commands](./helpful-commands.md) for more information on the docker commands
