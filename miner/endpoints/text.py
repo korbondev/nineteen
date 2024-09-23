@@ -26,11 +26,8 @@ async def chat_completions(
     config: Config = Depends(get_config),
     worker_config: WorkerConfig = Depends(get_worker_config),
 ) -> StreamingResponse:  # sourcery skip: raise-from-previous-error
-    logger.info("in chat_completions() got this far")
-    logger.error("in chat_completions() got this far")
-    print("in chat_completions() got this far")
-    # quit()
-
+    
+    #logger.info("in chat_completions() got this far")
     try:
         async with async_ensure_close_context(chat_stream(config.aiohttp_client, decrypted_payload, worker_config)) as generator:
             try:
