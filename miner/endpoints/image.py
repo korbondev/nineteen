@@ -24,10 +24,7 @@ async def _process_image_request(
     worker_config: WorkerConfig,
 ) -> payload_models.ImageResponse:
     
-    logger.info(f"in _process_image_request() post_endpoint: {post_endpoint}")
-    logger.error(f"in _process_image_request() post_endpoint: {post_endpoint}")
-    print(f"in _process_image_request() post_endpoint: {post_endpoint}")
-
+    #logger.info(f"in _process_image_request() post_endpoint: {post_endpoint}")
     image_response = await get_image_from_server(
         aiohttp_client=fiber_config.aiohttp_client,
         body=decrypted_payload,
