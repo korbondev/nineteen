@@ -27,7 +27,7 @@ async def chat_stream(
         aiohttp_client (aiohttp.ClientSession): The aiohttp client to use for sending the request.
         decrypted_payload (payload_models.ChatPayload): The decrypted chat payload to send to the server.
         worker_config (WorkerConfig): The configuration of the worker service.
-        client_timeout (float, optional): The timeout for the client in seconds. Defaults to 5.0.
+        client_timeout (float, optional): The timeout for the client in seconds. Defaults to 30.0.
 
     Yields:
         str: The response as a stream of SSE messages.
