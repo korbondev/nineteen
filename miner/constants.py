@@ -6,8 +6,8 @@ AVATAR_SERVER_ENDPOINT = "avatar"
 
 ENDPOINT_TO_PORT_MAP = {
     # endpoint in map should have no leading / 
-    "chat-llama-3-1-70b": (7405, "/v1/chat/completions", None), # need to check vllm endpoint route
-    "chat-llama-3-1-8b": (7105, "/v1/chat/completions", None), # need to check vllm endpoint route
+    "chat-llama-3-1-70b": (7405, "v1/chat/completions", None), # need to check vllm endpoint route
+    "chat-llama-3-1-8b": (7105, "v1/chat/completions", None), # need to check vllm endpoint route
     "avatar": (7212, "avatar", "avatar"),
     "inpaint": (7222, "inpaint", "inpaint"),
     "proteus-text-to-image": (7231, "txt2img", "proteus"),
