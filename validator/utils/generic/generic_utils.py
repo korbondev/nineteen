@@ -1,5 +1,5 @@
 import contextlib
-import json
+import ujson as json
 import logging
 import time
 from typing import AsyncGenerator

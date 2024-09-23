@@ -1,60 +1,65 @@
-import json
-import httpx
+import aiohttp
+import traceback
 from fiber.logging_utils import get_logger
 
 from core.models import payload_models
 from core import tasks_config as tcfg
 from core.tasks import Task
 from miner.config import WorkerConfig
+from miner.constants import map_endpoint_with_override
+
+from typing import AsyncGenerator, Any
 
 logger = get_logger(__name__)
 
 
 async def chat_stream(
-    httpx_client: httpx.AsyncClient, decrypted_payload: payload_models.ChatPayload, worker_config: WorkerConfig
-):
-    task_config = tcfg.get_enabled_task_config(decrypted_payload.model)
-    if task_config is None:
-        raise ValueError(f"Task config not found for model: {decrypted_payload.model}")
-    assert task_config.orchestrator_server_config.load_model_config is not None
-
-    model_name = task_config.orchestrator_server_config.load_model_config["model"]
+    aiohttp_client: aiohttp.ClientSession, decrypted_payload: payload_models.ChatPayload, worker_config: WorkerConfig
+) -> AsyncGenerator[str | None, Any]:
     
-
-    if task_config.task == Task.chat_llama_3_1_8b:
-        address = worker_config.LLAMA_3_1_8B_TEXT_WORKER_URL
-    elif task_config.task == Task.chat_llama_3_1_70b:
-        address = worker_config.LLAMA_3_1_70B_TEXT_WORKER_URL
-    else:
-        raise ValueError(f"Invalid model: {decrypted_payload.model}")
+    logger.info(f"in chat_stream() decrypted_payload.model: {decrypted_payload.model}")
+    logger.error(f"in chat_stream() decrypted_payload.model: {decrypted_payload.model}")
+    print(f"in chat_stream() decrypted_payload.model: {decrypted_payload.model}")
+    #quit()
     
-    decrypted_payload.model = model_name
+    address, _ = map_endpoint_with_override(None, decrypted_payload.model, None)
+    if address is None:
+        task_config = tcfg.get_enabled_task_config(decrypted_payload.model)
+        if task_config is None:
+            raise ValueError(f"Task config not found for model: {decrypted_payload.model}")
+        assert task_config.orchestrator_server_config.load_model_config is not None
+
+        #decrypted_payload.model = task_config.orchestrator_server_config.load_model_config["model"]
+        if task_config.orchestrator_server_config.load_model_config["model"] == "unsloth/Meta-Llama-3.1-8B-Instruct":
+            address = worker_config.LLAMA_3_1_8B_TEXT_WORKER_URL
+        elif task_config.orchestrator_server_config.load_model_config["model"] == "hugging-quants/Meta-Llama-3.1-70B-Instruct-AWQ-INT4":
+            address = worker_config.LLAMA_3_1_70B_TEXT_WORKER_URL
+        elif task_config.orchestrator_server_config.load_model_config["model"] == "mattshumer/reflection-70b":
+            address = worker_config.REFLECTION_70B_TEXT_WORKER_URL
+        else:
+            raise ValueError(f"Invalid model: {decrypted_payload.model}")
 
     assert address is not None, f"Address for model: {decrypted_payload.model} is not set in env vars!"
 
-    if True:
-        # NOTE: review timeout?
-        async with httpx_client.stream("POST", address, json=decrypted_payload.model_dump(), timeout=5) as resp:
+    logger.info(f"Sending request to {address}")
+
+    timeout = aiohttp.ClientTimeout(total=5)
+    async with aiohttp_client.post(address, json=decrypted_payload.model_dump(), raise_for_status=True, timeout=timeout) as resp:
+        if resp.status != 200:
+            logger.error(f"Error in streaming text from the server: {resp.status}.")
+            yield None
+
+        async for chunk_enc in resp.content:
+            chunk = None
             try:
-                resp.raise_for_status()
-            except httpx.HTTPStatusError as e:
-                await resp.aread()
-                logger.error(f"HTTP Error {e.response.status_code}: {e.response.text}")
-                raise
-            async for chunk in resp.aiter_lines():
-                try:
-                    received_event_chunks = chunk.split("\n\n")
-                    for event in received_event_chunks:
-                        if event == "":
-                            continue
-                        prefix, _, data = event.partition(":")
-                        if data.strip() == "[DONE]":
-                            break
-                        yield f"data: {data}\n\n"
-                except Exception as e:
-                    logger.error(f"Error in streaming text from the server: {e}. Original chunk: {chunk}")
-    else:
-        for i in range(100):
-            data = {"choices": [{"delta": {"content": f"{i}"}}]}
-            yield f"data: {json.dumps(data)}\n\n"
-        yield "data: [DONE]\n\n"
+                chunk = chunk_enc.decode()
+                for event in chunk.split("\n\n"):
+                    if not event.strip():
+                        continue
+                    prefix, _, data = event.partition(":")
+                    if data.strip() == "[DONE]":
+                        break
+                    yield f"data: {data}\n\n"
+            except Exception as e:
+                logger.error(f"Error in streaming text from the server: {e}. Original chunk: {chunk}\n{traceback.format_exc()}")
+                yield None

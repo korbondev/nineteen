@@ -1,16 +1,15 @@
 version: "3"
 
 tasks:
-
   set_weights:
     cmds:
       - docker compose --env-file .vali.env -f docker-compose.yml run --entrypoint "python src/cycle/calculate_and_schedule_weights.py" control_node
   control_node_dev:
     cmds:
       - ENV_FILE=.vali.env python -m validator.control_node.src.main
-  
+
   query_node_dev:
-    cmds: 
+    cmds:
       - ENV_FILE=.vali.env python -m validator.query_node.src.main
 
   entry_node_dev:
@@ -34,9 +33,9 @@ tasks:
 
   update_docker_fiber_version:
     cmds:
-      - docker run --rm nineteen-control_node sh -c "pip install git+https://github.com/rayonlabs/fiber.git --upgrade"
-      - docker run --rm nineteen-entry_node sh -c "pip install git+https://github.com/rayonlabs/fiber.git --upgrade"
-      - docker run --rm nineteen-query_node sh -c "pip install git+https://github.com/rayonlabs/fiber.git --upgrade"
+      - docker run --rm nineteen-control_node sh -c "pip install git+https://github.com/korbondev/fiber.git --upgrade"
+      - docker run --rm nineteen-entry_node sh -c "pip install git+https://github.com/korbondev/fiber.git --upgrade"
+      - docker run --rm nineteen-query_node sh -c "pip install git+https://github.com/korbondev/fiber.git --upgrade"
 
   createm:
     cmds:

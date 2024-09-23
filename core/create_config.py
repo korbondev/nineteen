@@ -76,7 +76,7 @@ def generate_validator_config(dev: bool = False) -> dict[str, Any]:
 
     config: dict[str, Any] = {}
     config["POSTGRES_USER"] = "user"
-    config["POSTGRES_PASSWORD"] = generate_secure_password() if not existing_password else existing_password
+    config["POSTGRES_PASSWORD"] = existing_password or generate_secure_password()
     config["POSTGRES_DB"] = "19_db"
     config["POSTGRES_PORT"] = "5432"
     config["POSTGRES_HOST"] = "postgresql"
@@ -115,10 +115,7 @@ def generate_validator_config(dev: bool = False) -> dict[str, Any]:
 
 
 def generate_config(dev: bool = False, miner: bool = False) -> dict[str, Any]:
-    if miner:
-        return generate_miner_config(dev)
-    else:
-        return generate_validator_config(dev)
+    return generate_miner_config(dev) if miner else generate_validator_config(dev)
 
 
 def write_config_to_file(config: dict[str, Any], env: str) -> None:

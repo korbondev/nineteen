@@ -7,7 +7,7 @@ Stores the scored results in the database and potentially posts stats to TauVisi
 import asyncio
 from datetime import datetime, timedelta
 import random
-import json
+import ujson as json
 from typing import Any, Dict
 import uuid
 
