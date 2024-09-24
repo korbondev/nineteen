@@ -1,3 +1,4 @@
+import time
 import aiohttp
 import traceback
 from fiber.logging_utils import get_logger
@@ -14,10 +15,8 @@ logger = get_logger(__name__)
 
 
 async def chat_stream(
-    aiohttp_client: aiohttp.ClientSession, decrypted_payload: payload_models.ChatPayload, worker_config: WorkerConfig
+    decrypted_payload: payload_models.ChatPayload, worker_config: WorkerConfig
 ) -> AsyncGenerator[str | None, Any]:
-    
-    logger.info(f"in chat_stream() decrypted_payload.model: {decrypted_payload.model}")
     
 
     task_config = tcfg.get_enabled_task_config(decrypted_payload.model)
@@ -26,7 +25,7 @@ async def chat_stream(
     assert task_config.orchestrator_server_config.load_model_config is not None
     model_name = task_config.orchestrator_server_config.load_model_config["model"]
     decrypted_payload.model = model_name # needed for vllm endpoint
-    
+
     # if task_config.task == Task.chat_llama_3_1_8b:
     #     address = worker_config.LLAMA_3_1_8B_TEXT_WORKER_URL
     # elif task_config.task == Task.chat_llama_3_1_70b:
@@ -34,40 +33,30 @@ async def chat_stream(
     # else:
     #     raise ValueError(f"Invalid model: {decrypted_payload.model}")    
 
-    address, _ = map_endpoint_with_override(None, task_config.task.value, None)    
-    assert address is not None, f"Address for model: {task_config.task.value} is not set in env vars!"
+    address, _ = map_endpoint_with_override(None, task_config.task, None)
+    assert address is not None, f"Address for model: {task_config.task} is not set in env vars!"
 
+    logger.info(f"in chat_stream() task: {task_config.task}")
 
-    client_timeout = aiohttp.ClientTimeout(total=60)
-    try:
-        async with aiohttp_client.post(
-            address,
-            json=decrypted_payload.model_dump(),
-            raise_for_status=True,
-            timeout=client_timeout,
-        ) as resp:
-            if resp.status != 200:
-                logger.error(f"Error in streaming text from the server: {resp.status}.")
-                yield None
-            else:
-                async for line in resp.content:
-                    if line:
-                        chunk = None
-                        try:
-                            chunk = line.decode("utf-8").strip()
-                            for event in chunk.split("\n\n"):
-                                if not event.strip():
-                                    continue
-                                prefix, _, data = event.partition(":")
-                                if data.strip() == "[DONE]":
-                                    break
-                                yield f"data: {data}\n\n"
-                        except Exception as e:
-                            logger.error(
-                                f"Error in streaming text from the server: {e}. Original chunk: {chunk}\n{traceback.format_exc()}"
-                            )
-                            # Decide whether to continue or break
-                            # For now, we can continue to the next line
-    except Exception as e:
-        logger.error(f"Error in streaming text from the server: {str(e)}")
-        raise  # Re-raise the exception to signal failure
+    count = 0
+    started_at = time.time()
+    timeout = aiohttp.ClientTimeout(total=30)
+    async with aiohttp.ClientSession() as session:
+        try:
+            async with session.post(address, json=decrypted_payload.model_dump(), timeout=timeout) as resp:
+                resp.raise_for_status()
+
+                async for chunk_enc in resp.content:
+                    if chunk := chunk_enc.decode():
+                        yield chunk
+                        if 'data:' in chunk:
+                            count += 1
+        except Exception as e:
+            logger.error(
+                f"Error in streaming text from the server {e}"
+            )
+            raise
+
+        finally:
+            delta = time.time() - started_at
+            logger.info(f"task: {task_config.task} streamed {count} tokens in {round(delta, 4)} seconds @ {round(count / delta, 6)} tps")
