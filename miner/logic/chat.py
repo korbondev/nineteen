@@ -1,6 +1,6 @@
 import time
 import aiohttp
-from aiohttp import ClientConnectorError
+from aiohttp import ClientOSError
 import asyncio
 from fiber.logging_utils import get_logger
 
@@ -66,7 +66,7 @@ async def chat_stream(
                     return
                 
             # retry on connection error
-            except (ClientConnectorError, asyncio.TimeoutError) as e:
+            except (ClientOSError, asyncio.TimeoutError) as e:
                 logger.warning(f"Attempt {retries}: Connection error {e}. Retrying...")
                 continue
 

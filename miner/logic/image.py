@@ -1,7 +1,7 @@
 import time
 import ujson as json
 import aiohttp
-from aiohttp import ClientConnectorError
+from aiohttp import ClientOSError
 import asyncio
 from pydantic import BaseModel
 from core.log import get_logger
@@ -46,7 +46,7 @@ async def get_image_from_server(
                     return result
                 
             # retry on connection error
-            except (ClientConnectorError, asyncio.TimeoutError) as e:
+            except (ClientOSError, asyncio.TimeoutError) as e:
                 logger.warning(f"Attempt {retries}: Connection error {e}. Retrying...")
                 continue
             
