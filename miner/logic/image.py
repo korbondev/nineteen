@@ -36,7 +36,7 @@ async def get_image_from_server(
                 async with session.post(endpoint, json=body_dict, timeout=timeout) as response:
                     # retry on 500 error
                     if 500 <= response.status < 600:
-                        logger.warning(f"Attempt {retries}: Received {response.status} error. Retrying...")
+                        logger.warning(f"task: {engine} attempt {retries} received {response.status} error. Retrying...")
                         continue
                     response.raise_for_status()
                     

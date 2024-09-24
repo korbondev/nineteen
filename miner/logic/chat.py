@@ -51,7 +51,7 @@ async def chat_stream(
                 async with session.post(address, json=decrypted_payload.model_dump(), timeout=timeout) as response:
                     # retry on 500 error
                     if 500 <= response.status < 600:
-                        logger.warning(f"Attempt {retries}: Received {response.status} error. Retrying...")
+                        logger.warning(f"task: {task_config.task} attempt {retries} received {response.status} error. Retrying...")
                         continue
                     response.raise_for_status()
 
