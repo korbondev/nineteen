@@ -25,9 +25,9 @@ async def get_image_from_server(
     try:
         logger.info(f"in get_image_from_server() engine: {engine} sending request to {endpoint}")
 
-        response = await aiohttp_client.post(endpoint, json=body_dict, timeout=timeout)
-        response.raise_for_status()
-        return await response.json()
+        client_timeout = aiohttp.ClientTimeout(total=20)
+        async with aiohttp_client.post(endpoint, json=body_dict, timeout=client_timeout, raise_for_status=True) as response:
+            return await response.json()
 
     except aiohttp.ClientResponseError as error:
         error_details = {

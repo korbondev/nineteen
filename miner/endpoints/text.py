@@ -32,15 +32,19 @@ async def chat_completions(
         async with async_ensure_close_context(chat_stream(config.aiohttp_client, decrypted_payload, worker_config)) as generator:
             try:
                 first_chunk = await generator.__anext__()
-            except syncio_TimeoutError:
-                first_chunk = None
+            except StopAsyncIteration:
+                logger.error("Generator did not yield any values")
+                raise HTTPException(status_code=500, detail="No data received from the server")
+            except Exception as e:
+                logger.error(f"Error while retrieving first chunk: {e}")
+                raise HTTPException(status_code=500, detail=f"Error in streaming text from the server: {e}")
 
             if first_chunk is not None:
                 return StreamingResponse(async_chain(first_chunk, generator), media_type="text/event-stream")  # type: ignore
             logger.error("First chunk was None")
-            raise HTTPException(status_code=500, detail="Error in streaming text from the server")
-    except aiohttp.ClientError as e:
-        logger.error(f"Error in streaming text from the server: {e}. ")
+            raise HTTPException(status_code=500, detail="First chunk was None")            
+    except Exception as e:
+        logger.error(f"Error in streaming text from the server: {e}")
         raise HTTPException(status_code=500, detail=f"Error in streaming text from the server: {e}")
 
 

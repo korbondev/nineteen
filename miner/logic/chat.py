@@ -37,23 +37,37 @@ async def chat_stream(
     address, _ = map_endpoint_with_override(None, task_config.task.value, None)    
     assert address is not None, f"Address for model: {task_config.task.value} is not set in env vars!"
 
-    timeout = aiohttp.ClientTimeout(total=30)
-    async with aiohttp_client.post(address, json=decrypted_payload.model_dump(), raise_for_status=True, timeout=timeout) as resp:
-        if resp.status != 200:
-            logger.error(f"Error in streaming text from the server: {resp.status}.")
-            yield None
 
-        async for chunk_enc in resp.content:
-            chunk = None
-            try:
-                chunk = chunk_enc.decode()
-                for event in chunk.split("\n\n"):
-                    if not event.strip():
-                        continue
-                    prefix, _, data = event.partition(":")
-                    if data.strip() == "[DONE]":
-                        break
-                    yield f"data: {data}\n\n"
-            except Exception as e:
-                logger.error(f"Error in streaming text from the server: {e}. Original chunk: {chunk}\n{traceback.format_exc()}")
+    client_timeout = aiohttp.ClientTimeout(total=60)
+    try:
+        async with aiohttp_client.post(
+            address,
+            json=decrypted_payload.model_dump(),
+            raise_for_status=True,
+            timeout=client_timeout,
+        ) as resp:
+            if resp.status != 200:
+                logger.error(f"Error in streaming text from the server: {resp.status}.")
                 yield None
+            else:
+                async for line in resp.content:
+                    if line:
+                        chunk = None
+                        try:
+                            chunk = line.decode("utf-8").strip()
+                            for event in chunk.split("\n\n"):
+                                if not event.strip():
+                                    continue
+                                prefix, _, data = event.partition(":")
+                                if data.strip() == "[DONE]":
+                                    break
+                                yield f"data: {data}\n\n"
+                        except Exception as e:
+                            logger.error(
+                                f"Error in streaming text from the server: {e}. Original chunk: {chunk}\n{traceback.format_exc()}"
+                            )
+                            # Decide whether to continue or break
+                            # For now, we can continue to the next line
+    except Exception as e:
+        logger.error(f"Error in streaming text from the server: {str(e)}")
+        raise  # Re-raise the exception to signal failure
