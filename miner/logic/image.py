@@ -34,3 +34,6 @@ async def get_image_from_server(
         except Exception as e:
             logger.error(f"Error in getting image from the server {e}")
             return None
+        finally:
+            delta = time.time() - started_at
+            logger.info(f"task: {engine} completed image in {round(delta, 4)} seconds")
