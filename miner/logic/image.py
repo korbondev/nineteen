@@ -57,5 +57,5 @@ async def get_image_from_server(
 
     # Exhausted all retries
     delta = time.time() - started_at
-    logger.info(f"task: {engine} retried {max_retries} times and failed in {round(delta, 4)} seconds")
+    logger.error(f"task: {engine} retried {max_retries} times and failed in {round(delta, 4)} seconds")
     return None
