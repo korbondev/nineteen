@@ -1,6 +1,8 @@
 import time
 import ujson as json
 import aiohttp
+from aiohttp import ClientConnectorError
+import asyncio
 from pydantic import BaseModel
 from core.log import get_logger
 from miner.config import WorkerConfig
@@ -24,16 +26,36 @@ async def get_image_from_server(
     logger.info(f"in get_image_from_server() engine: {engine} sent to {endpoint}")
 
     started_at = time.time()
-    timeout = aiohttp.ClientTimeout(total=30)
-    async with aiohttp.ClientSession() as session:
-        try:
-            async with session.post(endpoint, json=body_dict, timeout=timeout) as response:
-                response.raise_for_status()
-                return await response.json()
+    timeout = aiohttp.ClientTimeout(total=15)
 
-        except Exception as e:
-            logger.error(f"Error in getting image from the server {e}")
-            return None
-        finally:
-            delta = time.time() - started_at
-            logger.info(f"task: {engine} completed image in {round(delta, 4)} seconds")
+    max_retries = 3
+    for retries in range(1, max_retries + 1):
+
+        async with aiohttp.ClientSession() as session:
+            try:
+                async with session.post(endpoint, json=body_dict, timeout=timeout) as response:
+                    # retry on 500 error
+                    if 500 <= response.status < 600:
+                        logger.warning(f"Attempt {retries}: Received {response.status} error. Retrying...")
+                        continue
+                    response.raise_for_status()
+                    
+                    result = await response.json()
+                    delta = time.time() - started_at
+                    logger.info(f"task: {engine} completed image in {round(delta, 4)} seconds")
+                    return result
+                
+            # retry on connection error
+            except (ClientConnectorError, asyncio.TimeoutError) as e:
+                logger.warning(f"Attempt {retries}: Connection error {e}. Retrying...")
+                continue
+            
+            # do not retry on other errors
+            except Exception as e:
+                logger.error(f"Error in getting image from the server {e}")
+                return None
+
+    # Exhausted all retries
+    delta = time.time() - started_at
+    logger.info(f"task: {engine} retried {max_retries} times and failed in {round(delta, 4)} seconds")
+    return None
