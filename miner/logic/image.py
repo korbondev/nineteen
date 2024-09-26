@@ -47,12 +47,12 @@ async def get_image_from_server(
                 
             # retry on connection error
             except (ClientOSError, asyncio.TimeoutError) as e:
-                logger.warning(f"Attempt {retries}: Connection error {e}. Retrying...")
+                logger.warning(f"task: {engine} attempt {retries}: Connection error {e}. Retrying...")
                 continue
             
             # do not retry on other errors
             except Exception as e:
-                logger.error(f"Error in getting image from the server {e}")
+                logger.error(f"task: {engine} error in getting image from the server {e}")
                 return None
 
     # Exhausted all retries

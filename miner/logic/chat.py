@@ -67,12 +67,12 @@ async def chat_stream(
                 
             # retry on connection error
             except (ClientOSError, asyncio.TimeoutError) as e:
-                logger.warning(f"Attempt {retries}: Connection error {e}. Retrying...")
+                logger.warning(f"task: {task_config.task} attempt {retries}: Connection error {e}. Retrying...")
                 continue
 
             except Exception as e:
                 logger.error(
-                    f"Error in streaming text from the server {e}"
+                    f"task: {task_config.task} error in streaming text from the server {e}"
                 )
                 raise
 
