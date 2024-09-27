@@ -1,8 +1,8 @@
 import time
 import ujson as json
 import aiohttp
-from aiohttp import ClientOSError
-import asyncio
+from aiohttp import ClientOSError, ServerTimeoutError, ConnectionTimeoutError, ClientConnectorError, ClientConnectionError
+from asyncio import TimeoutError
 from pydantic import BaseModel
 from core.log import get_logger
 from miner.config import WorkerConfig
@@ -46,8 +46,8 @@ async def get_image_from_server(
                     return result
                 
             # retry on connection error
-            except (ClientOSError, asyncio.TimeoutError) as e:
-                logger.warning(f"task: {engine} attempt {retries}: Connection error {e}. Retrying...")
+            except (ClientOSError, ServerTimeoutError, ConnectionTimeoutError, ClientConnectorError, ClientConnectionError, TimeoutError) as e:
+                logger.warning(f"task: {engine} attempt {retries}: Connection error {type(e).__name__}: {e}. Retrying...")
                 continue
             
             # do not retry on other errors
