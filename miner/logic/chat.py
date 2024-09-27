@@ -6,7 +6,6 @@ from fiber.logging_utils import get_logger
 
 from core.models import payload_models
 from core import tasks_config as tcfg
-from core.tasks import Task
 from miner.config import WorkerConfig
 from miner.constants import map_endpoint_with_override
 
