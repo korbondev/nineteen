@@ -32,9 +32,9 @@ async def get_image_from_server(
     max_retries = 3
     for retries in range(1, max_retries + 1):
 
-        async with aiohttp.ClientSession() as session:
+        async with aiohttp.ClientSession(timeout=timeout) as session:
             try:
-                async with session.post(endpoint, json=body_dict, timeout=timeout) as response:
+                async with session.post(endpoint, json=body_dict) as response:
                     # retry on 500 error
                     if 500 <= response.status < 600:
                         logger.warning(f"task: {task} attempt {retries} received {response.status} error. Retrying...")

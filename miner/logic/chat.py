@@ -1,7 +1,7 @@
 import time
 import aiohttp
-from aiohttp import ClientOSError
-import asyncio
+from aiohttp import ClientOSError, ServerTimeoutError, ConnectionTimeoutError, ClientConnectorError, ClientConnectionError
+from asyncio import TimeoutError
 from fiber.logging_utils import get_logger
 
 from core.models import payload_models
@@ -45,9 +45,9 @@ async def chat_stream(
     max_retries = 3
 
     for retries in range(1, max_retries + 1):
-        async with aiohttp.ClientSession() as session:
+        async with aiohttp.ClientSession(timeout=timeout) as session:
             try:
-                async with session.post(address, json=decrypted_payload.model_dump(), timeout=timeout) as response:
+                async with session.post(address, json=decrypted_payload.model_dump()) as response:
                     # retry on 500 error
                     if 500 <= response.status < 600:
                         logger.warning(f"task: {task_config.task} attempt {retries} received {response.status} error. Retrying...")
@@ -65,8 +65,8 @@ async def chat_stream(
                     return
                 
             # retry on connection error
-            except (ClientOSError, asyncio.TimeoutError) as e:
-                logger.warning(f"task: {task_config.task} attempt {retries}: Connection error {e}. Retrying...")
+            except (ClientOSError, ServerTimeoutError, ConnectionTimeoutError, ClientConnectorError, ClientConnectionError, TimeoutError) as e:
+                logger.warning(f"task: {task_config.task} attempt {retries}: Connection error {type(e).__name__}: {e}. Retrying...")
                 continue
 
             except Exception as e:
