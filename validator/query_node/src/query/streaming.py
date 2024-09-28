@@ -1,3 +1,4 @@
+from datetime import datetime
 import ujson as json
 import time
 from typing import AsyncGenerator
@@ -87,6 +88,7 @@ async def consume_generator(
     contender: Contender,
     node: Node,
     payload: dict,
+    start_time: float,
     debug: bool = False,
 ) -> bool:
     assert job_id
@@ -104,7 +106,7 @@ async def consume_generator(
         await utils.adjust_contender_from_result(config, query_result, contender, synthetic_query, payload=payload)
         return False
 
-    start_time, text_jsons, status_code, first_message = time.time(), [], 200, True
+    text_jsons, status_code, first_message =  [], 200, True
     try:
         async for text in async_chain(first_chunk, generator):
             if isinstance(text, bytes):
@@ -122,11 +124,13 @@ async def consume_generator(
 
                 for text_json in loaded_jsons:
                     if not isinstance(text_json, dict):
+                        logger.debug(f"Invalid text_json because its not a dict?: {text_json}")
                         first_message = True  # NOTE: Janky, but so we mark it as a fail
                         break
                     try:
                         _ = text_json["choices"][0]["delta"]["content"]
                     except KeyError:
+                        logger.debug(f"Invalid text_json because there's not delta content: {text_json}")
                         first_message = True  # NOTE: Janky, but so we mark it as a fail
                         break
 
@@ -149,7 +153,7 @@ async def consume_generator(
             await _handle_event(
                 config, content="data: [DONE]\n\n", synthetic_query=synthetic_query, job_id=job_id, status_code=200
             )
-            logger.info(f"✅ Queried node: {node.node_id} for task: {task}. Success: {not first_message}.")
+            logger.info(f" 👀  Queried node: {node.node_id} for task: {task}. Success: {not first_message}.")
 
         response_time = time.time() - start_time
         query_result = utility_models.QueryResult(
@@ -171,6 +175,9 @@ async def consume_generator(
             await utils.adjust_contender_from_result(config, query_result, contender, synthetic_query, payload=payload)
             await config.redis_db.expire(rcst.QUERY_RESULTS_KEY + ":" + job_id, 10)
 
+    character_count = sum([len(text_json["choices"][0]["delta"]["content"]) for text_json in text_jsons])
+    logger.debug(f"Success: {success}; Node: {node.node_id}; Task: {task}; response_time: {response_time}; first_message: {first_message}; character_count: {character_count}")
+    logger.info(f"Success: {success}")
     return success
 
 

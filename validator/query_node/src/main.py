@@ -1,3 +1,4 @@
+import time
 from dotenv import load_dotenv
 import os
 
@@ -7,7 +8,7 @@ load_dotenv(os.getenv("ENV_FILE", ".vali.env"))
 import asyncio
 from redis.asyncio import Redis
 
-from core.log import get_logger
+from fiber.logging_utils import get_logger
 import ujson as json
 from validator.query_node.src.query_config import Config
 from validator.utils.redis import redis_constants as rcst, redis_dataclasses as rdc
@@ -73,6 +74,7 @@ async def listen_for_tasks(config: Config):
 
         while len(tasks) < MAX_CONCURRENT_TASKS:
             message_json = await config.redis_db.blpop(rcst.QUERY_QUEUE_KEY, timeout=1)  # type: ignore
+            
             if not message_json:
                 break
             try:

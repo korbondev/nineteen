@@ -15,12 +15,13 @@ import httpx
 
 from core import tasks_config as tcfg
 
-from core.log import get_logger
+from fiber.logging_utils import get_logger
 from core.tasks import Task
 from validator.models import RewardData
 from validator.utils import work_and_speed_functions
 from validator.db.src import functions as db_functions
 from validator.db.src.sql.rewards_and_scores import (
+    delete_all_of_specific_task,
     delete_contender_history_older_than,
     delete_reward_data_older_than,
     select_tasks_and_number_of_results,
@@ -29,7 +30,7 @@ from validator.db.src.sql.rewards_and_scores import (
 from validator.control_node.src.control_config import Config
 
 from core import constants as ccst
-from validator.utils.post.nineteen import DataTypeToPost, post_to_nineteen_ai
+from validator.utils.post.nineteen import DataTypeToPost, RewardDataPostBody, post_to_nineteen_ai
 
 logger = get_logger(__name__)
 
@@ -145,11 +146,18 @@ async def _process_and_store_score(
             await sql_insert_reward_data(connection, reward_data)
             date_to_delete = datetime.now() - timedelta(days=7)
             await delete_reward_data_older_than(connection, date_to_delete)
+            date_to_delete = datetime.now() - timedelta(days=3)
             await delete_contender_history_older_than(connection, date_to_delete)
 
         logger.info(f"Successfully scored and stored data for task: {task}")
 
-        await post_to_nineteen_ai(data_to_post=reward_data.model_dump(mode="json"), keypair=config.keypair, data_type_to_post=DataTypeToPost.REWARD_DATA)
+        reward_data_to_post = RewardDataPostBody(**reward_data.model_dump(), testnet=config.testnet)
+
+        await post_to_nineteen_ai(
+            data_to_post=reward_data_to_post.model_dump(mode="json"),
+            keypair=config.keypair,
+            data_type_to_post=DataTypeToPost.REWARD_DATA,
+        )
 
 
 async def score_results(config: Config):
@@ -167,8 +175,15 @@ async def score_results(config: Config):
         if total_tasks_stored < min_tasks_to_start_scoring:
             await asyncio.sleep(5)
             continue
-
-        task_to_score = Task(random.choices(list(tasks_and_results.keys()), weights=list(tasks_and_results.values()), k=1)[0])
+        
+        task_to_score_str =  random.choices(list(tasks_and_results.keys()), weights=list(tasks_and_results.values()), k=1)[0]
+        try:
+            task_to_score = Task(task_to_score_str)
+        except ValueError:
+            logger.error(f"Invalid task: {task_to_score_str}")
+            async with await config.psql_db.connection() as connection:
+                await delete_all_of_specific_task(connection, task_to_score_str)
+            continue
 
         await _score_task(config, task_to_score, max_tasks_to_score=200)
 

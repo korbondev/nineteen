@@ -16,11 +16,13 @@ def generate_secure_password(length: int = 16) -> str:
     return "".join(password)
 
 
-def validate_input(prompt: str, validator: Callable[[str], bool]) -> str:
+def validate_input(prompt: str, validator: Callable[[str], bool], default: str | None = None) -> str:
     while True:
         value = input(prompt)
         if validator(value):
             return value
+        elif default and not value:
+            return default
         print("Invalid input. Please try again.")
 
 
@@ -44,6 +46,12 @@ def float_validator(value: str) -> bool:
         return False
 
 
+def websocket_validator(value: str | None) -> bool:
+    if not value:
+        return True
+    return re.match(r"^wss?://", value) is not None
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Generate configuration file")
     parser.add_argument("--dev", action="store_true", help="Use development configuration")
@@ -56,6 +64,7 @@ def generate_miner_config(dev: bool = False) -> dict[str, Any]:
     config["WALLET_NAME"] = input("Enter wallet name (default: default): ") or "default"
     config["HOTKEY_NAME"] = input("Enter hotkey name (default: default): ") or "default"
     config["SUBTENSOR_NETWORK"] = input("Enter subtensor network (default: test): ") or "test"
+    config["SUBTENSOR_ADDRESS"] = validate_input("Enter subtensor address (default: None): ", websocket_validator) or None
     default_stake_threshold = "0" if config["SUBTENSOR_NETWORK"] == "test" else "1000"
     config["NETUID"] = 176 if config["SUBTENSOR_NETWORK"] == "test" else 19
     config["ENV"] = "dev" if dev else "prod"
@@ -64,6 +73,7 @@ def generate_miner_config(dev: bool = False) -> dict[str, Any]:
     config["NODE_EXTERNAL_IP"] = input("Enter NODE_EXTERNAL_IP (leave blank if not needed): ")
     config["IMAGE_WORKER_URL"] = input("Enter IMAGE_WORKER_URL: ")
     config["LLAMA_3_1_8B_TEXT_WORKER_URL"] = input("Enter LLAMA_3_1_8B_TEXT_WORKER_URL: ")
+    config["LLAMA_3_2_3B_TEXT_WORKER_URL"] = input("Enter LLAMA_3_2_3B_TEXT_WORKER_URL: ")
     config["LLAMA_3_1_70B_TEXT_WORKER_URL"] = input("Enter LLAMA_3_1_70B_TEXT_WORKER_URL: ")
     config["MIN_STAKE_THRESHOLD"] = input("Enter MIN_STAKE_THRESHOLD (default: 1000): ") or default_stake_threshold
     config["REFRESH_NODES"] = "true"
@@ -83,10 +93,24 @@ def generate_validator_config(dev: bool = False) -> dict[str, Any]:
     config["WALLET_NAME"] = input("Enter wallet name (default: default): ") or "default"
     config["HOTKEY_NAME"] = input("Enter hotkey name (default: default): ") or "default"
     config["SUBTENSOR_NETWORK"] = input("Enter subtensor network (default: finney): ") or "finney"
+    config["SUBTENSOR_ADDRESS"] = validate_input("Enter subtensor address (default: None): ", websocket_validator)
     config["NETUID"] = 176 if config["SUBTENSOR_NETWORK"] == "test" else 19
+    organic_server_port = input("Enter port for your organic server (optional) (default: None): ")
+    if organic_server_port:
+        config["ORGANIC_SERVER_PORT"] = organic_server_port
 
     config["GPU_SERVER_ADDRESS"] = validate_input(
         "Enter GPU server address: ", lambda x: x == "" or re.match(r"^https?://.+", x) is not None
+    )
+
+    config["SET_METAGRAPH_WEIGHTS_WITH_HIGH_UPDATED_TO_NOT_DEREG"] = (
+        "true"
+        if validate_input(
+            "Set metagraph weights when updated gets really high to not dereg? (y/n): (default: n)", yes_no_validator, default="n"
+        )
+        .lower()
+        .startswith("y")
+        else "false"
     )
 
     if dev:
@@ -102,6 +126,9 @@ def generate_validator_config(dev: bool = False) -> dict[str, Any]:
             "true"
             if validate_input("Replace with Docker localhost? (y/n): (default: y)", yes_no_validator).lower().startswith("y")
             else "false"
+        )
+        config["SCORING_PERIOD_TIME_MULTIPLIER"] = float(
+            validate_input("Enter scoring period time multiplier: ", float_validator, "1.0")
         )
     else:
         config["ENV"] = "prod"

@@ -15,6 +15,7 @@ T = TypeVar("T", bound=BaseModel)
 
 @dataclass
 class WorkerConfig:
+    LLAMA_3_2_3B_TEXT_WORKER_URL: str | None
     LLAMA_3_1_8B_TEXT_WORKER_URL: str | None
     LLAMA_3_1_70B_TEXT_WORKER_URL: str | None
     REFLECTION_70B_TEXT_WORKER_URL: str | None
@@ -24,6 +25,7 @@ class WorkerConfig:
 @lru_cache
 def factory_worker_config() -> WorkerConfig:
     return WorkerConfig(
+        LLAMA_3_2_3B_TEXT_WORKER_URL=os.getenv("LLAMA_3_2_3B_TEXT_WORKER_URL"),
         LLAMA_3_1_8B_TEXT_WORKER_URL=os.getenv("LLAMA_3_1_8B_TEXT_WORKER_URL"),
         LLAMA_3_1_70B_TEXT_WORKER_URL=os.getenv("LLAMA_3_1_70B_TEXT_WORKER_URL"),
         REFLECTION_70B_TEXT_WORKER_URL=os.getenv("REFLECTION_70B_TEXT_WORKER_URL"),

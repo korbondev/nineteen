@@ -15,7 +15,7 @@ services:
       - redis_network
     entrypoint: ["python", "-u", "/app/validator/control_node/src/main.py"]
     volumes:
-      - ~/.bittensor/wallets:/root/.bittensor/wallets
+      - ${HOME}/.bittensor/wallets:/root/.bittensor/wallets
     env_file:
       - .vali.env
     container_name: control_node
@@ -25,6 +25,28 @@ services:
       restart_policy:
         condition: on-failure
 
+  weight_setter:
+    build:
+      context: .
+      dockerfile: dockerfiles/control_node.dockerfile
+    depends_on:
+      dbmate:
+        condition: service_completed_successfully
+      redis:
+        condition: service_started
+    networks:
+      - postgres_network
+      - redis_network
+    entrypoint: ["python", "-u", "/app/validator/control_node/src/set_weights/calculate_and_schedule_weights.py"]
+    volumes:
+      - ${HOME}/.bittensor/wallets:/root/.bittensor/wallets
+    env_file:
+      - .vali.env
+    container_name: weight_setter
+    deploy:
+      restart_policy:
+        condition: on-failure
+ 
   query_node:
     build:
       context: .
@@ -44,7 +66,7 @@ services:
       - postgres_network
       - redis_network
     volumes:
-      - ~/.bittensor/wallets:/root/.bittensor/wallets
+      - ${HOME}/.bittensor/wallets:/root/.bittensor/wallets
     entrypoint: ["python", "-u", "/app/validator/query_node/src/main.py"]
     container_name: query_node
     env_file:
@@ -74,6 +96,8 @@ services:
     container_name: entry_node
     env_file:
       - .vali.env
+    profiles:
+      - entry_node_profile
 
   postgresql:
     image: postgres:latest
@@ -86,8 +110,6 @@ services:
       retries: 5
     networks:
       - postgres_network
-    ports:
-      - "5432:5432"
     container_name: 0_postgresql
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
@@ -110,12 +132,11 @@ services:
       DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgresql:5432/${POSTGRES_DB}?sslmode=disable
     container_name: 0_dbmate
 
+
   redis:
     image: redis/redis-stack:latest
     networks:
       - redis_network
-    ports:
-      - "6379:6379"
     container_name: 0_redis
     deploy:
       restart_policy:

@@ -4,7 +4,7 @@ import uuid
 from fastapi import Depends, HTTPException
 from fastapi.responses import JSONResponse, StreamingResponse
 from redis.asyncio import Redis
-from core.log import get_logger
+from fiber.logging_utils import get_logger
 from fastapi.routing import APIRouter
 from validator.entry_node.src.core.configuration import Config
 from validator.entry_node.src.core.dependencies import get_config
@@ -68,10 +68,10 @@ async def make_stream_organic_query(
     job_id = uuid.uuid4().hex
     organic_message = _construct_organic_message(payload=payload, job_id=job_id, task=task)
 
-    await redis_db.lpush(rcst.QUERY_QUEUE_KEY, organic_message)  # type: ignore
-
     pubsub = redis_db.pubsub()
     await pubsub.subscribe(f"{gcst.ACKNLOWEDGED}:{job_id}")
+    await redis_db.lpush(rcst.QUERY_QUEUE_KEY, organic_message)  # type: ignore
+
 
     first_chunk = None
     try:

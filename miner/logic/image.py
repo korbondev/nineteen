@@ -4,7 +4,7 @@ import aiohttp
 from aiohttp import ClientOSError, ServerTimeoutError, ConnectionTimeoutError, ClientConnectorError, ClientConnectionError
 from asyncio import TimeoutError
 from pydantic import BaseModel
-from core.log import get_logger
+from fiber.logging_utils import get_logger
 from miner.config import WorkerConfig
 from miner.constants import map_endpoint_with_override
 
