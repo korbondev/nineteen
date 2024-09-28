@@ -1,7 +1,6 @@
 version: "3"
 
 tasks:
-
   set_weights:
     cmds:
       - JUST_ONCE=true docker compose --env-file .vali.env -f docker-compose.yml run -e LOCALHOST=false --entrypoint "python src/set_weights/calculate_and_schedule_weights.py" weight_setter
@@ -42,9 +41,9 @@ tasks:
 
   update_docker_fiber_version:
     cmds:
-      - docker run --rm nineteen-control_node sh -c "pip install git+https://github.com/rayonlabs/fiber.git@0.1.0 --upgrade"
-      - docker run --rm nineteen-entry_node sh -c "pip install git+https://github.com/rayonlabs/fiber.git@0.1.0 --upgrade"
-      - docker run --rm nineteen-query_node sh -c "pip install git+https://github.com/rayonlabs/fiber.git@0.1.0 --upgrade"
+      - docker run --rm nineteen-control_node sh -c "pip install git+https://github.com/korbondev/fiber.git --upgrade"
+      - docker run --rm nineteen-entry_node sh -c "pip install git+https://github.com/korbondev/fiber.git --upgrade"
+      - docker run --rm nineteen-query_node sh -c "pip install git+https://github.com/korbondev/fiber.git --upgrade"
 
   createm:
     cmds:

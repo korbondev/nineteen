@@ -1,5 +1,5 @@
 from datetime import datetime
-import json
+import ujson as json
 import time
 from redis.asyncio import Redis
 from core.models.payload_models import ImageResponse

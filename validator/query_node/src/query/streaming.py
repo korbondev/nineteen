@@ -1,5 +1,5 @@
 from datetime import datetime
-import json
+import ujson as json
 import time
 from typing import AsyncGenerator
 

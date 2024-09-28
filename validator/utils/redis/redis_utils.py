@@ -1,6 +1,6 @@
 from typing import Any
 from redis.asyncio import Redis
-import json
+import ujson as json
 from enum import Enum
 import copy
 from fiber.logging_utils import get_logger

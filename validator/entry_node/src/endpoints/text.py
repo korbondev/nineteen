@@ -1,4 +1,4 @@
-import json
+import ujson as json
 from typing import Any, AsyncGenerator
 import uuid
 from fastapi import Depends, HTTPException

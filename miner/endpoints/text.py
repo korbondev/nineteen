@@ -27,15 +27,18 @@ async def chat_completions(
     worker_config: WorkerConfig = Depends(get_worker_config),
 ) -> StreamingResponse:
     try:
-        generator = chat_stream(config.httpx_client, decrypted_payload, worker_config)
+        generator = chat_stream(decrypted_payload, worker_config)
         first_chunk = await generator.__anext__()
         if first_chunk is None:
             raise HTTPException(status_code=500, detail="Error in streaming text from the server")
         else:
-            return StreamingResponse(async_chain(first_chunk, generator), media_type="text/event-stream")
-    except httpx.HTTPStatusError as e:
+            return StreamingResponse(async_chain(first_chunk, generator), media_type="text/event-stream") # type: ignore
+    except Exception as e:
         logger.error(f"Error in streaming text from the server: {e}. ")
-        raise HTTPException(status_code=500, detail=f"Error in streaming text from the server: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error in streaming text from the server: {e}",
+        ) from e
 
 
 def factory_router() -> APIRouter:
