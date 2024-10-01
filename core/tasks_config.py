@@ -1,6 +1,7 @@
 from enum import Enum
 from pydantic import BaseModel, Field
 from core.tasks import Task
+from core.models.utility_models import SCBaseModel
 
 
 class TaskType(Enum):
@@ -24,7 +25,7 @@ class Endpoints(Enum):
     chat_completions = "/chat/completions"
 
 
-class TaskScoringConfig(BaseModel):
+class TaskScoringConfig(SCBaseModel):
     task: Task
     mean: float
     variance: float
@@ -32,7 +33,7 @@ class TaskScoringConfig(BaseModel):
     task_type: TaskType
 
 
-class OrchestratorServerConfig(BaseModel):
+class OrchestratorServerConfig(SCBaseModel):
     server_needed: ServerType = Field(examples=[ServerType.LLM, ServerType.IMAGE])
     load_model_config: dict | None = Field(examples=[None])
     checking_function: str = Field(examples=["check_text_result", "check_image_result"])
@@ -43,12 +44,12 @@ class OrchestratorServerConfig(BaseModel):
         use_enum_values = True
 
 
-class SyntheticGenerationConfig(BaseModel):
+class SyntheticGenerationConfig(SCBaseModel):
     func: str
     kwargs: dict
 
 
-class FullTaskConfig(BaseModel):
+class FullTaskConfig(SCBaseModel):
     task: Task
     max_capacity: float
     scoring_config: TaskScoringConfig
@@ -348,6 +349,4 @@ def get_enabled_task_config(task: Task | str) -> FullTaskConfig | None:
         except ValueError:
             return None
     config = TASK_TO_CONFIG.get(task)
-    if config is None or not config.enabled:
-        return None
-    return config
+    return None if config is None or not config.enabled else config

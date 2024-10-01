@@ -6,6 +6,14 @@ from pydantic import BaseModel
 from pydantic.fields import Field
 
 
+from functools import lru_cache
+class SCBaseModel(BaseModel):
+    @classmethod
+    @lru_cache()
+    def get_schema(cls):
+        return cls.model_json_schema()
+
+
 class Role(str, enum.Enum):
     """Message is sent by which role?"""
 
@@ -14,7 +22,7 @@ class Role(str, enum.Enum):
     system = "system"
 
 
-class Message(BaseModel):
+class Message(SCBaseModel):
     role: Role = Role.user
     content: str = Field(default=..., examples=["Remind me that I have forgot to set the messages"])
 
@@ -22,7 +30,7 @@ class Message(BaseModel):
         use_enum_values = True
 
 
-class QueryResult(BaseModel):
+class QueryResult(SCBaseModel):
     formatted_response: Any
     node_id: Optional[int]
     node_hotkey: Optional[str]
@@ -33,7 +41,7 @@ class QueryResult(BaseModel):
     created_at: datetime = Field(default_factory=datetime.now)
 
 
-class ImageHashes(BaseModel):
+class ImageHashes(SCBaseModel):
     average_hash: str = ""
     perceptual_hash: str = ""
     difference_hash: str = ""

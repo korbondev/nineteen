@@ -6,6 +6,7 @@ import httpx
 from pydantic import BaseModel
 from fiber.logging_utils import get_logger
 from fiber import Keypair
+from core.models.utility_models import SCBaseModel
 
 from validator.models import RewardData
 
@@ -23,10 +24,10 @@ class DataTypeToPost(enum.Enum):
 BASE_URL = "https://dev.tauvision.ai/"
 
 data_type_to_url = {
-    DataTypeToPost.REWARD_DATA: BASE_URL + "v1/store/reward_data",
-    DataTypeToPost.UID_RECORD: BASE_URL + "v1/store/uid_records",
-    DataTypeToPost.MINER_CAPACITIES: BASE_URL + "v1/store/miner_capacities",
-    DataTypeToPost.VALIDATOR_INFO: BASE_URL + "v1/store/validator_info",
+    DataTypeToPost.REWARD_DATA: f"{BASE_URL}v1/store/reward_data",
+    DataTypeToPost.UID_RECORD: f"{BASE_URL}v1/store/uid_records",
+    DataTypeToPost.MINER_CAPACITIES: f"{BASE_URL}v1/store/miner_capacities",
+    DataTypeToPost.VALIDATOR_INFO: f"{BASE_URL}v1/store/validator_info",
 }
 
 # Turn off if you don't wanna post your validator info to nineteen.ai
@@ -74,19 +75,19 @@ class RewardDataPostBody(RewardData):
     testnet: bool
 
 
-class ValidatorInfoPostBody(BaseModel):
+class ValidatorInfoPostBody(SCBaseModel):
     versions: str
     validator_hotkey: str
 
 
-class MinerCapacitiesPostObject(BaseModel):
+class MinerCapacitiesPostObject(SCBaseModel):
     validator_hotkey: str
     miner_hotkey: str
     task: str
     volume: float
 
 
-class MinerCapacitiesPostBody(BaseModel):
+class MinerCapacitiesPostBody(SCBaseModel):
     data: List[MinerCapacitiesPostObject]
 
     def dump(self):
@@ -101,7 +102,7 @@ class MinerCapacitiesPostBody(BaseModel):
         ]
 
 
-class UidRecordPostObject(BaseModel):
+class UidRecordPostObject(SCBaseModel):
     axon_uid: int
     miner_hotkey: str
     validator_hotkey: str
@@ -128,7 +129,7 @@ class UidRecordPostObject(BaseModel):
         }
 
 
-class UidRecordsPostBody(BaseModel):
+class UidRecordsPostBody(SCBaseModel):
     data: List[UidRecordPostObject]
 
     def dump(self):

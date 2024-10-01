@@ -7,11 +7,12 @@ from core.tasks import Task
 from core.models import payload_models
 from fiber.logging_utils import get_logger
 from validator.utils.entry_utils import image_b64_is_valid, fetch_image_b64
+from core.models.utility_models import SCBaseModel
 
 logger = get_logger(__name__)
 
 
-class ChatRequest(BaseModel):
+class ChatRequest(SCBaseModel):
     messages: list[utility_models.Message] = Field(...)
     temperature: float = Field(default=0.5, examples=[0.5, 0.4, 0.3], title="Temperature", description="Temperature for text generation.")
     max_tokens: int = Field(500, title="Max Tokens", description="Max tokens for text generation.")
@@ -37,7 +38,7 @@ def chat_to_payload(chat_request: ChatRequest) -> payload_models.ChatPayload:
     )
 
 
-class TextToImageRequest(BaseModel):
+class TextToImageRequest(SCBaseModel):
     prompt: str = Field(..., description="Prompt for image generation")
     negative_prompt: str = Field("", description="Negative prompt for image generation")
     steps: int = Field(10, description="Steps for image generation")
@@ -54,7 +55,7 @@ def text_to_image_to_payload(text_to_image_request: TextToImageRequest) -> paylo
     )
 
 
-class ImageToImageRequest(BaseModel):
+class ImageToImageRequest(SCBaseModel):
     init_image: str = Field(
         ...,
         description="Base64 encoded image",
@@ -97,7 +98,7 @@ async def image_to_image_to_payload(
     )
 
 
-class InpaintRequest(BaseModel):
+class InpaintRequest(SCBaseModel):
     prompt: str = Field(..., description="Prompt for inpainting")
     negative_prompt: str | None = Field(None, description="Negative prompt for inpainting")
     steps: int = Field(10, description="Steps for inpainting")
@@ -151,7 +152,7 @@ async def inpaint_to_payload(
     )
 
 
-class AvatarRequest(BaseModel):
+class AvatarRequest(SCBaseModel):
     prompt: str = Field(
         ...,
         description="Prompt for avatar generation",
@@ -200,5 +201,5 @@ async def avatar_to_payload(
     )
 
 
-class ImageResponse(BaseModel):
+class ImageResponse(SCBaseModel):
     image_b64: str
