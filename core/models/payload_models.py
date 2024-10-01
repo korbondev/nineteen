@@ -1,18 +1,19 @@
 from typing import Any
 from pydantic import BaseModel, Field
 from core.models import utility_models
+from core.models.utility_models import SCBaseModel
 from core.tasks import Task
 
 
-class CapacityResponse(BaseModel):
+class CapacityResponse(SCBaseModel):
     capacities: dict[str, float]
 
 
-class TextToSpeechRequest(BaseModel):
+class TextToSpeechRequest(SCBaseModel):
     params: dict[str, Any]
 
 
-class ChatPayload(BaseModel):
+class ChatPayload(SCBaseModel):
     messages: list[utility_models.Message] = Field(...)
     temperature: float = Field(default=..., title="Temperature", description="Temperature for text generation.")
     seed: int = Field(default=..., title="Seed", description="Seed for text generation.")
@@ -27,14 +28,14 @@ class ChatPayload(BaseModel):
         use_enum_values = True
 
 
-class ImageResponse(BaseModel):
+class ImageResponse(SCBaseModel):
     image_b64: str | None
     is_nsfw: bool | None
     clip_embeddings: list[float] | None
     image_hashes: utility_models.ImageHashes | None
 
 
-class TextToImagePayload(BaseModel):
+class TextToImagePayload(SCBaseModel):
     prompt: str = Field(...)
     negative_prompt: str = Field(
         "", title="Negative Prompt", description="Negative Prompt for text generation."
@@ -47,7 +48,7 @@ class TextToImagePayload(BaseModel):
     model: str = Field(default=Task.proteus_text_to_image.value, title="Model")
 
 
-class ImageToImagePayload(BaseModel):
+class ImageToImagePayload(SCBaseModel):
     prompt: str = Field(...)
     negative_prompt: str = Field(
         "", title="Negative Prompt", description="Negative Prompt for text generation."
@@ -62,7 +63,7 @@ class ImageToImagePayload(BaseModel):
     init_image: str = Field(...)
 
 
-class InpaintPayload(BaseModel):
+class InpaintPayload(SCBaseModel):
     prompt: str = Field(...)
     negative_prompt: str | None = Field(
         None, title="Negative Prompt", description="Negative Prompt for text generation."
@@ -76,7 +77,7 @@ class InpaintPayload(BaseModel):
     mask_image: str = Field(..., title="Mask Image")
 
 
-class AvatarPayload(BaseModel):
+class AvatarPayload(SCBaseModel):
     prompt: str = Field(...)
     negative_prompt: str | None = Field(
         None, title="Negative Prompt", description="Negative Prompt for text generation."
