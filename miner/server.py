@@ -19,8 +19,8 @@ app.include_router(text_router)
 app.include_router(image_router)
 app.include_router(generic_router)
 
-#if os.getenv("ENV", "prod").lower() == "dev":
-configure_extra_logging_middleware(app)
+if os.getenv("ENV", "prod").lower() == "dev":
+    configure_extra_logging_middleware(app)
 
 if __name__ == "__main__":
     import uvicorn
