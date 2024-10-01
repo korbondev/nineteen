@@ -4,7 +4,8 @@ from miner.endpoints.text import factory_router as text_factory_router
 from miner.endpoints.image import factory_router as image_factory_router
 from miner.endpoints.generic import factory_router as generic_factory_router
 from fiber.logging_utils import get_logger
-from fiber.miner.middleware import configure_extra_logging_middleware
+#from fiber.miner.middleware import configure_extra_logging_middleware
+from miner.middleware import configure_extra_logging_middleware
 
 logger = get_logger(__name__)
 
@@ -18,8 +19,8 @@ app.include_router(text_router)
 app.include_router(image_router)
 app.include_router(generic_router)
 
-if os.getenv("ENV", "prod").lower() == "dev":
-    configure_extra_logging_middleware(app)
+#if os.getenv("ENV", "prod").lower() == "dev":
+configure_extra_logging_middleware(app)
 
 if __name__ == "__main__":
     import uvicorn
