@@ -72,20 +72,20 @@ logger = get_logger(__name__)
 
 
 async def _logging_middleware(request: Request, call_next) -> Response:
-    logger.debug(f"Received request: {request.method} {request.url}")
-    logger.debug(f"Request headers: {request.headers}")
+    logger.error(f"Received request: {request.method} {request.url}")
+    logger.error(f"Request headers: {request.headers}")
 
     try:
 
         body = await request.body()
         if SHOW_ALL_REQUESTS:
-            logger.debug(f"Request body: {body.decode()}")
+            logger.error(f"Request body: {body.decode()}")
 
     except Exception as e:
         logger.error(f"Error reading request body: {e}")
 
     response = await call_next(request)
-    logger.debug(f"Response status: {response.status_code}")
+    logger.error(f"Response status: {response.status_code}")
 
     if response.status_code != 200 or SHOW_ALL_RESPONSES:
 
