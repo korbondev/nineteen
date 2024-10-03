@@ -10,6 +10,7 @@ from miner.config import WorkerConfig
 from miner.constants import map_endpoint_with_override
 
 from typing import AsyncGenerator, Any
+import ujson as json
 
 logger = get_logger(__name__)
 
@@ -57,9 +58,25 @@ async def chat_stream(
                     response.raise_for_status()
 
                     async for chunk_enc in response.content:
+                        # fine with vllm 0.5.5
+                        # if chunk := chunk_enc.decode():
+                        #     yield chunk
+                        #     if 'data:' in chunk:
+                        #         count += 1
+                        
+                        # need this for quality score (vllm 0.6.2)
                         if chunk := chunk_enc.decode():
-                            yield chunk
-                            if 'data:' in chunk:
+                            received_event_chunks = chunk.split("\n\n")
+                            for event in received_event_chunks:
+                                if event.strip() == "":
+                                    continue
+                                prefix, _, data = event.partition(":")
+                                if data.strip() == "[DONE]":
+                                    break
+                                data2 = json.loads(data)
+                                if data2["choices"][0].get("logprobs") is None or data2["choices"][0]["logprobs"]["content"][0].get("logprob") is None:
+                                    continue
+                                yield f"data: {data}\n\n"
                                 count += 1
 
                     delta = time.time() - started_at
