@@ -43,11 +43,11 @@ async def chat_stream(
 
     started_at = time.time()
     timeout = aiohttp.ClientTimeout(total=30)
-    count = 0
-
     max_retries = 3
-    first_chunk = True
+    
     for retries in range(1, max_retries + 1):
+        count = 0
+        first_chunk = True
         async with aiohttp.ClientSession(timeout=timeout) as session:
             try:
                 async with session.post(address, json=decrypted_payload.model_dump()) as response:
