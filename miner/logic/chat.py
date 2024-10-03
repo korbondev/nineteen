@@ -46,7 +46,7 @@ async def chat_stream(
     count = 0
 
     max_retries = 3
-
+    first_chunk = True
     for retries in range(1, max_retries + 1):
         async with aiohttp.ClientSession(timeout=timeout) as session:
             try:
@@ -63,26 +63,33 @@ async def chat_stream(
                         #     yield chunk
                         #     if 'data:' in chunk:
                         #         count += 1
-                        
-                        # need this for quality score (vllm 0.6.2)
+
+                        # # need this for quality score (vllm 0.6.2)
+                        # if chunk := chunk_enc.decode():
+                        #     received_event_chunks = chunk.split("\n\n")
+                        #     for event in received_event_chunks:
+                        #         if event.strip() == "":
+                        #             continue
+                        #         prefix, _, data = event.partition(":")
+                        #         if data.strip() == "[DONE]":
+                        #             break
+                        #         data2 = json.loads(data)
+                        #         if data2["choices"][0].get("logprobs") is None or data2["choices"][0]["logprobs"]["content"][0].get("logprob") is None:
+                        #             continue
+                        #         yield f"data: {data}\n\n"
+                        #         count += 1
+
                         if chunk := chunk_enc.decode():
-                            received_event_chunks = chunk.split("\n\n")
-                            for event in received_event_chunks:
-                                if event.strip() == "":
-                                    continue
-                                prefix, _, data = event.partition(":")
-                                if data.strip() == "[DONE]":
-                                    break
-                                data2 = json.loads(data)
-                                if data2["choices"][0].get("logprobs") is None or data2["choices"][0]["logprobs"]["content"][0].get("logprob") is None:
-                                    continue
-                                yield f"data: {data}\n\n"
-                                count += 1
+                            if first_chunk and chunk.startswith("data: {"):
+                                first_chunk = False
+                                continue
+                            yield chunk
+                            count += 1
 
                     delta = time.time() - started_at
                     logger.info(f"task: {task_config.task} streamed {count} tokens in {round(delta, 4)} seconds @ {round(count / delta, 6)} tps")
                     return
-                
+
             # retry on connection error
             except (ClientOSError, ServerTimeoutError, ConnectionTimeoutError, ClientConnectorError, ClientConnectionError, TimeoutError) as e:
                 logger.warning(f"task: {task_config.task} attempt {retries}: Connection error {type(e).__name__}: {e}. Retrying...")
