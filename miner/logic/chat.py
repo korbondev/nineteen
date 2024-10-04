@@ -81,11 +81,12 @@ async def chat_stream(
                         
                         # Very fast and compaitble with vllm 0.6.2
                         if chunk := chunk_enc.decode():
-                            if first_chunk and chunk.startswith("data: {"):
-                                first_chunk = False
-                                continue
-                            yield chunk
-                            count += 1
+                            if chunk.startswith("data: {"):
+                                if first_chunk:
+                                    first_chunk = False
+                                    continue
+                                yield chunk
+                                count += 1
                         
                         # compatible with num_scheduler_steps and vllm 0.6.2
                         # no need to do this, just set --multi-step-stream-outputs if num scheduler steps > 1
