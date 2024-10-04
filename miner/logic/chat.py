@@ -47,7 +47,7 @@ async def chat_stream(
     
     for retries in range(1, max_retries + 1):
         count = 0
-        #first_chunk = True
+        first_chunk = True
         async with aiohttp.ClientSession(timeout=timeout) as session:
             try:
                 async with session.post(address, json=decrypted_payload.model_dump()) as response:
@@ -80,44 +80,45 @@ async def chat_stream(
                         #         count += 1
                         
                         # Very fast and compaitble with vllm 0.6.2
-                        # if chunk := chunk_enc.decode():
-                        #     if first_chunk and chunk.startswith("data: {"):
-                        #         first_chunk = False
-                        #         continue
-                        #     yield chunk
-                        #     count += 1
+                        if chunk := chunk_enc.decode():
+                            if first_chunk and chunk.startswith("data: {"):
+                                first_chunk = False
+                                continue
+                            yield chunk
+                            count += 1
                         
                         # compatible with num_scheduler_steps and vllm 0.6.2
-                        if chunk := chunk_enc.decode():
-                            received_event_chunks = chunk.split("\n\n")
-                            for event in received_event_chunks:
-                                if event.strip() == "":
-                                    continue
-                                prefix, _, data = event.partition(":")
-                                if data.strip() == "[DONE]":
-                                    break
-                                data_dict = json.loads(data)
-                                choices = data_dict.get("choices", [])
-                                for choice in choices:
-                                    if logprobs := choice.get("logprobs", None):
-                                        if logprobs_content := logprobs.get("content", []):
-                                            # Yield each token in the current scheduler step with all original fields
-                                            for token_data in logprobs_content:
-                                                updated_data_dict = data_dict.copy()
-                                                updated_data_dict["choices"] = [
-                                                    {
-                                                        **choice,
-                                                        "delta": {
-                                                            "content": token_data.get("token", "")
-                                                        },
-                                                        "logprobs": {
-                                                            **choice.get("logprobs", {}),
-                                                            "content": [token_data]
-                                                        }
-                                                    }
-                                                ]
-                                        yield f"data: {json.dumps(updated_data_dict)}\n\n"
-                                        count += 1
+                        # no need to do this, just set --multi-step-stream-outputs if num scheduler steps > 1
+                        # if chunk := chunk_enc.decode():
+                        #     received_event_chunks = chunk.split("\n\n")
+                        #     for event in received_event_chunks:
+                        #         if event.strip() == "":
+                        #             continue
+                        #         prefix, _, data = event.partition(":")
+                        #         if data.strip() == "[DONE]":
+                        #             break
+                        #         data_dict = json.loads(data)
+                        #         choices = data_dict.get("choices", [])
+                        #         for choice in choices:
+                        #             if logprobs := choice.get("logprobs", None):
+                        #                 if logprobs_content := logprobs.get("content", []):
+                        #                     # Yield each token in the current scheduler step with all original fields
+                        #                     for token_data in logprobs_content:
+                        #                         updated_data_dict = data_dict.copy()
+                        #                         updated_data_dict["choices"] = [
+                        #                             {
+                        #                                 **choice,
+                        #                                 "delta": {
+                        #                                     "content": token_data.get("token", "")
+                        #                                 },
+                        #                                 "logprobs": {
+                        #                                     **choice.get("logprobs", {}),
+                        #                                     "content": [token_data]
+                        #                                 }
+                        #                             }
+                        #                         ]
+                        #                 yield f"data: {json.dumps(updated_data_dict)}\n\n"
+                        #                 count += 1
 
                     delta = time.time() - started_at
                     logger.info(f"task: {task_config.task} streamed {count} tokens in {round(delta, 4)} seconds @ {round(count / delta, 6)} tps")
