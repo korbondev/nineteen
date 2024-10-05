@@ -34,3 +34,12 @@ else
     echo "No hotkeys with stake > $MIN_STAKE_THRESHOLD found."
     rm "$temp_file"
 fi
+
+
+# HAProxy configuration
+# (in haproxy frontend)
+# # Define an ACL to match the "validator-hotkey" header against a list of allowed keys
+# acl allowed_hotkey hdr_sub(validator-hotkey) -f /etc/haproxy/sn19_hotkeys.txt
+
+# # Deny the request with a 403 status if the "validator-hotkey" is not in the allowed list
+# http-request deny if !allowed_hotkey
