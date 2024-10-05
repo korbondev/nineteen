@@ -33,7 +33,7 @@ def parse_log_file(file_path, task_filter=None):
                 time_in_seconds = float(match.group(4))
                 tps = float(match.group(5))
                 
-                if task_filter is None or task_filter == task_type:
+                if task_filter is None or task_filter in task_type:
                     task_data[task_type]["times"].append(time_in_seconds)
                     task_data[task_type]["tps_values"].append(tps)
                     task_data[task_type]["count"] += 1
@@ -46,7 +46,7 @@ def parse_log_file(file_path, task_filter=None):
                     task_type = completion_match.group(3)
                     time_in_seconds = float(completion_match.group(4))
                     
-                    if task_filter is None or task_filter == task_type:
+                    if task_filter is None or task_filter in task_type:
                         task_data[task_type]["times"].append(time_in_seconds)
                         task_data[task_type]["count"] += 1
                         task_data[task_type]["timestamps"].append(timestamp)
