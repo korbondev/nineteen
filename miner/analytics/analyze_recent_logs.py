@@ -9,8 +9,9 @@ from datetime import datetime
 LOG_PATTERN = r'(\d+\|sn\d+_m.*)\| (\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3}) \| INFO \|.*task: ([\w\.-]+) .*streamed \d+ tokens in ([\d\.]+) seconds @ ([\d\.]+) tps.*'
 COMPLETION_PATTERN = r'(\d+\|sn\d+_m.*)\| (\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3}) \| INFO \|.*task: ([\w\.-]+) completed image in ([\d\.]+) seconds.*'
 
-# Number of lines to be provided by argument
+# Number of lines and optional task filter to be provided by arguments
 num_lines = sys.argv[1]
+task_filter = sys.argv[2] if len(sys.argv) > 2 else None
 
 # Run pm2 logs command and store output to temp file
 def run_pm2_logs(num_lines):
@@ -18,7 +19,7 @@ def run_pm2_logs(num_lines):
         subprocess.run(["pm2", "logs", "--nostream", "--lines", num_lines], stdout=temp_file)
         return temp_file.name
 
-def parse_log_file(file_path):
+def parse_log_file(file_path, task_filter=None):
     task_data = defaultdict(lambda: {"times": [], "tps_values": [], "count": 0, "timestamps": []})
     
     # Read the log file
@@ -32,10 +33,11 @@ def parse_log_file(file_path):
                 time_in_seconds = float(match.group(4))
                 tps = float(match.group(5))
                 
-                task_data[task_type]["times"].append(time_in_seconds)
-                task_data[task_type]["tps_values"].append(tps)
-                task_data[task_type]["count"] += 1
-                task_data[task_type]["timestamps"].append(timestamp)
+                if task_filter is None or task_filter == task_type:
+                    task_data[task_type]["times"].append(time_in_seconds)
+                    task_data[task_type]["tps_values"].append(tps)
+                    task_data[task_type]["count"] += 1
+                    task_data[task_type]["timestamps"].append(timestamp)
             else:
                 completion_match = re.match(COMPLETION_PATTERN, line)
                 if completion_match:
@@ -44,9 +46,10 @@ def parse_log_file(file_path):
                     task_type = completion_match.group(3)
                     time_in_seconds = float(completion_match.group(4))
                     
-                    task_data[task_type]["times"].append(time_in_seconds)
-                    task_data[task_type]["count"] += 1
-                    task_data[task_type]["timestamps"].append(timestamp)
+                    if task_filter is None or task_filter == task_type:
+                        task_data[task_type]["times"].append(time_in_seconds)
+                        task_data[task_type]["count"] += 1
+                        task_data[task_type]["timestamps"].append(timestamp)
     
     # Calculate min, max, and average for times and TPS for each task
     results = {}
@@ -92,7 +95,7 @@ def parse_log_file(file_path):
 
 def main():
     temp_file_path = run_pm2_logs(num_lines)
-    results = parse_log_file(temp_file_path)
+    results = parse_log_file(temp_file_path, task_filter)
     if results:
         for task_type, stats in results.items():
             print(f"Task: {task_type}")
