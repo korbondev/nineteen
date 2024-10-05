@@ -118,8 +118,8 @@ async def chat_stream(
                                                         }
                                                     }
                                                 ]
-                                        yield f"data: {json.dumps(updated_data_dict)}\n\n"
-                                        count += 1
+                                                yield f"data: {json.dumps(updated_data_dict)}\n\n"
+                                                count += 1
 
                     delta = time.time() - started_at
                     logger.info(f"task: {task_config.task} streamed {count} tokens in {round(delta, 4)} seconds @ {round(count / delta, 6)} tps")
