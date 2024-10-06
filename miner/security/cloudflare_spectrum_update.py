@@ -100,7 +100,7 @@ def main():
             # Check the dns name for the start of the domain
             if instance["dns_name"].startswith(CLOUDFLARE_DNS_NAME_PREFIX):
 
-                if "-" not in instance["protocol"]:
+                if "-" in instance["protocol"]:
                     print(f"Skipping instance {instance['dns_name']}, ports cannot be a range!")
                     continue
                 
