@@ -131,7 +131,7 @@ def main():
                     update = {
                         "dns": instance["dns"],
                         "ip_firewall": instance["ip_firewall"],
-                        "origin_direct": instance["origin_direct"],# "origin_direct":["tcp://147.185.40.123:22001"]
+                        "origin_direct": instance["origin_direct"],# ex. "origin_direct":["tcp://1.2.3.4:1101"]
                         "protocol": instance["protocol"],
                         "proxy_protocol": instance["proxy_protocol"],
                         "tls": instance["tls"],
