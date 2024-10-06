@@ -192,6 +192,7 @@ def main():
 
                         # Run the command
                         try:
+                            print(f"Running command: {' '.join(command)}")
                             result = subprocess.run(command, cwd=REPO_DIRECTORY, capture_output=True, text=True)
                             if result.returncode == 0:
                                 print(f"Successfully updated IP and port on chain for {DNS_SUBDOMAIN_PREFIX}")
