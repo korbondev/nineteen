@@ -38,8 +38,10 @@ fi
 
 # HAProxy configuration
 # (in haproxy frontend)
+
 # # Define an ACL to match the "validator-hotkey" header against a list of allowed keys
+# acl is_pub_key_request path_beg /public-encryption-key
 # acl allowed_hotkey hdr_sub(validator-hotkey) -f /etc/haproxy/sn19_hotkeys.txt
 
 # # Deny the request with a 403 status if the "validator-hotkey" is not in the allowed list
-# http-request deny if !allowed_hotkey
+# http-request deny if !is_pub_key_request !allowed_hotkey
