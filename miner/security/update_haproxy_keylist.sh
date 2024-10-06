@@ -6,13 +6,16 @@ if ! command -v jq &> /dev/null; then
     apt-get update && apt-get install -y jq
 fi
 
+# Repositor directory
+REPO_DIR="/root/nineteen"
+
 # Input JSON file containing nodes
-NODES_FILE="nodes.json"
+NODES_FILE="$REPO_DIR/nodes.json"
 # Output file for the hotkeys
 HOTKEYS_FILE="/etc/haproxy/sn19_hotkeys.txt"
 
 # Find the first environment file that starts with .coldkey-
-ENV_FILE=$(ls .coldkey-* 2>/dev/null | head -n 1)
+ENV_FILE=$(ls $REPO_DIR/.coldkey-* 2>/dev/null | head -n 1)
 
 # Source the environment file to get the MIN_STAKE_THRESHOLD
 if [ -f "$ENV_FILE" ]; then
