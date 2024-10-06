@@ -31,6 +31,7 @@ CLOUDFLARE_DNS_NAME_PREFIX = os.environ.get("CLOUDFLARE_DNS_NAME_PREFIX")
 CLOUDFLARE_PORT_INCREMENT_AMT = os.environ.get("CLOUDFLARE_PORT_INCREMENT_AMT")
 PREFIX_ONLY_ON_DNS = os.environ.get("PREFIX_ONLY_ON_DNS")
 REPO_DIRECTORY = os.environ.get("REPO_DIRECTORY")
+UPDATE_NODE_PORT_IN_NODE_FILE = os.environ.get("UPDATE_NODE_PORT_IN_NODE_FILE")
 
 # Cloudflare API endpoint
 API_ENDPOINT = f"https://api.cloudflare.com/client/v4/zones/{CLOUDFLARE_ZONE_ID}/spectrum/apps"
@@ -164,15 +165,16 @@ def main():
                         # Update NODE_PORT in the env_vars dictionary
                         env_vars['NODE_PORT'] = str(new_port)
 
-                        # Write back to the .env file
-                        try:
-                            with open(node_env_path, 'w') as f:
-                                for key, value in env_vars.items():
-                                    f.write(f"{key}={value}\n")
-                            print(f"Updated {node_env_path} with new port number {new_port}")
-                        except Exception as e:
-                            print(f"Failed to update {node_env_path}: {e}")
-                            continue
+                        if UPDATE_NODE_PORT_IN_NODE_FILE == "true":
+                            # Write back to the .env file
+                            try:
+                                with open(node_env_path, 'w') as f:
+                                    for key, value in env_vars.items():
+                                        f.write(f"{key}={value}\n")
+                                print(f"Updated {node_env_path} with new port number {new_port}")
+                            except Exception as e:
+                                print(f"Failed to update {node_env_path}: {e}")
+                                continue
 
                         # Construct the command
                         fiber_post_ip_path = os.path.join(REPO_DIRECTORY, '.venv', 'bin', 'fiber-post-ip')
@@ -181,7 +183,7 @@ def main():
                             fiber_post_ip_path,
                             '--netuid', NETUID,
                             '--subtensor.network', SUBTENSOR_NETWORK,
-                            '--subtensor.address', SUBTENSOR_ADDRESS,
+                            '--subtensor.chain_endpoint', SUBTENSOR_ADDRESS,
                             '--external_port', str(new_port),
                             '--wallet.name', WALLET_NAME,
                             '--wallet.hotkey', HOTKEY_NAME,
