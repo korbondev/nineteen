@@ -126,8 +126,9 @@ for filename in os.listdir(REPO_DIRECTORY):
 
         if axon_ip_port := hotkey_row['AXON_IP'].values[0]:
             # Compare the AXON_IP value from the row with the external IP:PORT
-            if axon_ip_port != f"{NODE_EXTERNAL_IP}:{NODE_EXTERNAL_PORT}":
-                print(f"Hotkey: {hotkey} updating metagraph from {axon_ip_port} to {NODE_EXTERNAL_IP}:{NODE_EXTERNAL_PORT}")
+            axon_port = NODE_EXTERNAL_PORT or NODE_PORT
+            if axon_ip_port != f"{NODE_EXTERNAL_IP}:{axon_port}":
+                print(f"Hotkey: {hotkey} updating metagraph from {axon_ip_port} to {NODE_EXTERNAL_IP}:{axon_port}")
                 #quit()
                 # Construct the command
                 fiber_post_ip_path = os.path.join(REPO_DIRECTORY, '.venv', 'bin', 'fiber-post-ip')
@@ -137,7 +138,7 @@ for filename in os.listdir(REPO_DIRECTORY):
                     '--netuid', NETUID,
                     '--subtensor.network', SUBTENSOR_NETWORK,
                     '--subtensor.chain_endpoint', SUBTENSOR_ADDRESS,
-                    '--external_port', NODE_EXTERNAL_PORT,
+                    '--external_port', axon_port,
                     '--wallet.name', WALLET_NAME,
                     '--wallet.hotkey', HOTKEY_NAME,
                     '--external_ip', NODE_EXTERNAL_IP
