@@ -35,7 +35,7 @@ def fetch_metagraph(subtensor_address, netuid):
     # Initialize subtensor connection
     try:
         print(f"Fetching metagraph for netuid {netuid} from subtensor network: {subtensor_address}")
-        subtensor = bt.subtensor(network=f"ws://{subtensor_address}")
+        subtensor = bt.subtensor(network=f"{subtensor_address}")
     except Exception as e:
         print(f"Error connecting to subtensor network: {e}")
 
