@@ -90,7 +90,8 @@ for filename in os.listdir(REPO_DIRECTORY):
         print(f"Processing config file: {filename}")
         # load the config variables from the env 
         
-        env_vars = dotenv_values(filename)
+        node_env_path = os.path.join(REPO_DIRECTORY, filename)
+        env_vars = dotenv_values(node_env_path)
         HOTKEY_NAME = env_vars.get('HOTKEY_NAME')
         WALLET_NAME = env_vars.get('WALLET_NAME')
         SUBTENSOR_NETWORK = env_vars.get('SUBTENSOR_NETWORK')
