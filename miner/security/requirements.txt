@@ -1,0 +1,4 @@
+ujson
+pandas
+bittensor-cli[sdk]
+substrate-interface
