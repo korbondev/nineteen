@@ -159,18 +159,19 @@ def main():
                         SUBTENSOR_ADDRESS = env_vars.get('SUBTENSOR_ADDRESS')
                         IS_VALIDATOR = env_vars.get('IS_VALIDATOR')
                         NODE_PORT = env_vars.get('NODE_PORT')
+                        NODE_EXTERNAL_PORT = env_vars.get('NODE_EXTERNAL_PORT')
                         NODE_EXTERNAL_IP = env_vars.get('NODE_EXTERNAL_IP')
                         NETUID = env_vars.get('NETUID')
 
-                        # Update NODE_PORT in the env_vars dictionary
-                        env_vars['NODE_PORT'] = str(new_port)
+
 
                         if UPDATE_NODE_PORT_IN_NODE_FILE == "true":
                             # Write back to the .env file
                             try:
                                 with open(node_env_path, 'w') as f:
-                                    for key, value in env_vars.items():
-                                        f.write(f"{key}={value}\n")
+                                    for key, _ in env_vars.items():
+                                        if key == 'NODE_EXTERNAL_PORT':
+                                            f.write(f"{key}={new_port}\n")
                                 print(f"Updated {node_env_path} with new port number {new_port}")
                             except Exception as e:
                                 print(f"Failed to update {node_env_path}: {e}")
