@@ -82,7 +82,9 @@ def fetch_metagraph(subtensor_address, netuid):
     return parsed_metagraph
 
 
-
+count_hotkeys = 0
+count_registered = 0
+count_updated = 0
 parsed_metagraph = None # Initialize the parsed_metagraph
 for filename in os.listdir(REPO_DIRECTORY):
     if filename.startswith(f".{NODE_CONFIG_PREFIX}") and filename.endswith(".env"):
@@ -107,6 +109,7 @@ for filename in os.listdir(REPO_DIRECTORY):
         keypair = load_hotkey_keypair(wallet_name=WALLET_NAME, hotkey_name=HOTKEY_NAME)
         hotkey = keypair.ss58_address
         print(f"Loaded hotkey: {hotkey}")
+        count_hotkeys += 1
 
 
         # get the row from the parsed_metagraph dataframe that matches the hotkey
@@ -119,6 +122,7 @@ for filename in os.listdir(REPO_DIRECTORY):
         if hotkey_row.empty:
             print(f"Hotkey: {hotkey} is deregistered")
             continue
+        count_registered += 1
 
         if axon_ip_port := hotkey_row['AXON_IP'].values[0]:
             # Compare the AXON_IP value from the row with the external IP:PORT
@@ -145,6 +149,7 @@ for filename in os.listdir(REPO_DIRECTORY):
                     result = subprocess.run(command, cwd=REPO_DIRECTORY, capture_output=True, text=True)
                     if result.returncode == 0:
                         print(f"Successfully updated IP and port on chain for {hotkey}")
+                        count_updated += 1
                     else:
                         print(f"Error updating IP and port on chain for {hotkey}")
                         print(f"Stdout: {result.stdout}")
@@ -156,3 +161,9 @@ for filename in os.listdir(REPO_DIRECTORY):
         else:
             print(f"No matching row found for hotkey: {hotkey}")
         # if NODE_EXTERNAL_IP or NODE_EXTERNAL_PORT does not match 
+
+
+# Print the summary
+print(f"Total hotkeys: {count_hotkeys}")
+print(f"Total registered hotkeys: {count_registered}")
+print(f"Total updated hotkeys: {count_updated}")
