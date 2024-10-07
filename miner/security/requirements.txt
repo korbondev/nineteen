@@ -3,3 +3,4 @@ pandas
 bittensor
 #bittensor-cli[sdk]
 substrate-interface
+python-dotenv
