@@ -8,7 +8,6 @@ from substrateinterface import Keypair # pip install substrate-interface
 import subprocess
 
 # Make sure to install fiber!
-# pip uninstall -y fiber;
 # pip install git+https://github.com/korbondev/fiber.git --upgrade
 
 NODE_CONFIG_PREFIX = os.environ.get("NODE_CONFIG_PREFIX")
