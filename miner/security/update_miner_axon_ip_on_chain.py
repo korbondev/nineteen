@@ -21,7 +21,7 @@ def get_hotkey_file_path(wallet_name: str, hotkey_name: str) -> Path:
     return file_path
 
 
-def load_hotkey_keypair(wallet_name: str, hotkey_name: str) -> Keypair:
+def load_hotkey_keypair(wallet_name, hotkey_name):
     file_path = get_hotkey_file_path(wallet_name, hotkey_name)
     try:
         with open(file_path, "r") as file:
@@ -89,36 +89,48 @@ for filename in os.listdir(REPO_DIRECTORY):
 
         print(f"Processing config file: {filename}")
         # load the config variables from the env 
-        load_dotenv(f"{filename}")
+        
+        env_vars = dotenv_values(filename)
+        HOTKEY_NAME = env_vars.get('HOTKEY_NAME')
+        WALLET_NAME = env_vars.get('WALLET_NAME')
+        SUBTENSOR_NETWORK = env_vars.get('SUBTENSOR_NETWORK')
+        SUBTENSOR_ADDRESS = env_vars.get('SUBTENSOR_ADDRESS')
+        IS_VALIDATOR = env_vars.get('IS_VALIDATOR')
+        NODE_PORT = env_vars.get('NODE_PORT')
+        NODE_EXTERNAL_PORT = env_vars.get('NODE_EXTERNAL_PORT')
+        NODE_EXTERNAL_IP = env_vars.get('NODE_EXTERNAL_IP')
+        NETUID = env_vars.get('NETUID')    
+        
+        
         # load the bittensor hotkey from the HOTKEY_NAME=coldkey-01-hotkey-01 and WALLET_NAME=coldkey-01
-        keypair = load_hotkey_keypair(wallet_name=os.getenv("WALLET_NAME"), hotkey_name=os.getenv("HOTKEY_NAME"))
+        keypair = load_hotkey_keypair(wallet_name=WALLET_NAME, hotkey_name=HOTKEY_NAME)
         hotkey = keypair.ss58_address
         print(f"Loaded hotkey: {hotkey}")
 
 
         # get the row from the parsed_metagraph dataframe that matches the hotkey
         if parsed_metagraph is None:
-            parsed_metagraph = fetch_metagraph(os.getenv('SUBTENSOR_ADDRESS'), os.getenv('NETUID'))
+            parsed_metagraph = fetch_metagraph(SUBTENSOR_ADDRESS, NETUID)
         hotkey_row = parsed_metagraph.loc[parsed_metagraph['HOTKEY'] == hotkey]
         print(hotkey_row)     
 
         if axon_ip_port := hotkey_row['AXON_IP'].values[0]:
             # Compare the AXON_IP value from the row with the external IP:PORT
-            if axon_ip_port != f"{os.getenv('NODE_EXTERNAL_IP')}:{os.getenv('NODE_EXTERNAL_PORT')}":
-                print(f"Hotkey: {hotkey} updating metagraph from {axon_ip_port} to {os.getenv('NODE_EXTERNAL_IP')}:{os.getenv('NODE_EXTERNAL_PORT')}")
-                quit()
+            if axon_ip_port != f"{NODE_EXTERNAL_IP}:{NODE_EXTERNAL_PORT}":
+                print(f"Hotkey: {hotkey} updating metagraph from {axon_ip_port} to {NODE_EXTERNAL_IP}:{NODE_EXTERNAL_PORT}")
+                #quit()
                 # Construct the command
                 fiber_post_ip_path = os.path.join(REPO_DIRECTORY, '.venv', 'bin', 'fiber-post-ip')
 
                 command = [
                     fiber_post_ip_path,
-                    '--netuid', os.getenv('NETUID'),
-                    '--subtensor.network', os.getenv('SUBTENSOR_NETWORK'),
-                    '--subtensor.chain_endpoint', os.getenv('SUBTENSOR_ADDRESS'),
-                    '--external_port', os.getenv('NODE_EXTERNAL_PORT'),
-                    '--wallet.name', os.getenv('WALLET_NAME'),
-                    '--wallet.hotkey', os.getenv('HOTKEY_NAME'),
-                    '--external_ip', os.getenv('NODE_EXTERNAL_IP')
+                    '--netuid', NETUID,
+                    '--subtensor.network', SUBTENSOR_NETWORK,
+                    '--subtensor.chain_endpoint', SUBTENSOR_ADDRESS,
+                    '--external_port', NODE_EXTERNAL_PORT,
+                    '--wallet.name', WALLET_NAME,
+                    '--wallet.hotkey', HOTKEY_NAME,
+                    '--external_ip', NODE_EXTERNAL_IP
                 ]
 
                 # Run the command
