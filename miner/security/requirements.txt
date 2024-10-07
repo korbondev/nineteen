@@ -1,4 +1,5 @@
 ujson
 pandas
-bittensor-cli[sdk]
+bittensor
+#bittensor-cli[sdk]
 substrate-interface
