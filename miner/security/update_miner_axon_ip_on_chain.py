@@ -97,7 +97,7 @@ for filename in os.listdir(REPO_DIRECTORY):
 
 
         # get the row from the parsed_metagraph dataframe that matches the hotkey
-        if not parsed_metagraph:
+        if parsed_metagraph is None:
             parsed_metagraph = fetch_metagraph(os.getenv('SUBTENSOR_ADDRESS'), os.getenv('NETUID'))
         hotkey_row = parsed_metagraph.loc[parsed_metagraph['HOTKEY'] == hotkey]
         print(hotkey_row)     
