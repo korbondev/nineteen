@@ -113,7 +113,12 @@ for filename in os.listdir(REPO_DIRECTORY):
         if parsed_metagraph is None:
             parsed_metagraph = fetch_metagraph(SUBTENSOR_ADDRESS, NETUID)
         hotkey_row = parsed_metagraph.loc[parsed_metagraph['HOTKEY'] == hotkey]
-        print(hotkey_row)     
+        print(hotkey_row) 
+        
+        # if the dataframe is empty then make a note about the hotkey being deregistered and continue
+        if hotkey_row.empty:
+            print(f"Hotkey: {hotkey} is deregistered")
+            continue
 
         if axon_ip_port := hotkey_row['AXON_IP'].values[0]:
             # Compare the AXON_IP value from the row with the external IP:PORT
