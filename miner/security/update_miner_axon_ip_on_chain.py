@@ -3,13 +3,14 @@ from pathlib import Path
 import ujson as json # pip install ujson
 import pandas as pd # pip install pandas
 import bittensor as bt # pip install bittensor
-import dotenv # pip install python-dotenv
 from substrateinterface import Keypair # pip install substrate-interface
 import subprocess
+from dotenv import load_dotenv, dotenv_values
 
 # Make sure to install fiber!
 # pip install git+https://github.com/korbondev/fiber.git --upgrade
 
+load_dotenv()
 NODE_CONFIG_PREFIX = os.environ.get("NODE_CONFIG_PREFIX")
 REPO_DIRECTORY = os.environ.get("REPO_DIRECTORY")
 
@@ -25,10 +26,9 @@ def load_hotkey_keypair(wallet_name: str, hotkey_name: str) -> Keypair:
     try:
         with open(file_path, "r") as file:
             keypair_data = json.load(file)
-        keypair = Keypair.create_from_seed(keypair_data["secretSeed"])
-        return keypair
+        return Keypair.create_from_seed(keypair_data["secretSeed"])
     except Exception as e:
-        raise ValueError(f"Failed to load keypair: {str(e)}")
+        raise ValueError(f"Failed to load keypair: {str(e)}") from e
 
 
 def fetch_metagraph(subtensor_address, netuid):
@@ -89,26 +89,20 @@ for filename in os.listdir(REPO_DIRECTORY):
 
         print(f"Processing config file: {filename}")
         # load the config variables from the env 
-        dotenv.load_dotenv(f"{filename}")
+        load_dotenv(f"{filename}")
         # load the bittensor hotkey from the HOTKEY_NAME=coldkey-01-hotkey-01 and WALLET_NAME=coldkey-01
         keypair = load_hotkey_keypair(wallet_name=os.getenv("WALLET_NAME"), hotkey_name=os.getenv("HOTKEY_NAME"))
-        hotkey = keypair.ss58_address        
+        hotkey = keypair.ss58_address
         print(f"Loaded hotkey: {hotkey}")
-        
-        
+
+
         # get the row from the parsed_metagraph dataframe that matches the hotkey
         if not parsed_metagraph:
             parsed_metagraph = fetch_metagraph(os.getenv('SUBTENSOR_ADDRESS'), os.getenv('NETUID'))
         hotkey_row = parsed_metagraph.loc[parsed_metagraph['HOTKEY'] == hotkey]
         print(hotkey_row)     
-        
-        # get the AXON_IP value from the hotkey_row
-        axon_ip_port = hotkey_row['AXON_IP'].values[0]
-        
-           
-                
-        # Ensure the hotkey_row is not empty
-        if axon_ip_port:
+
+        if axon_ip_port := hotkey_row['AXON_IP'].values[0]:
             # Compare the AXON_IP value from the row with the external IP:PORT
             if axon_ip_port != f"{os.getenv('NODE_EXTERNAL_IP')}:{os.getenv('NODE_EXTERNAL_PORT')}":
                 print(f"Hotkey: {hotkey} updating metagraph from {axon_ip_port} to {os.getenv('NODE_EXTERNAL_IP')}:{os.getenv('NODE_EXTERNAL_PORT')}")
