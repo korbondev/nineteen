@@ -42,8 +42,8 @@ async def chat_stream(
     logger.info(f"in chat_stream() task: {task_config.task}")
 
     started_at = time.time()
-    timeout = aiohttp.ClientTimeout(total=30)
-    max_retries = 3
+    timeout = aiohttp.ClientTimeout(total=10)
+    max_retries = 10
     
     for retries in range(1, max_retries + 1):
         count = 0
