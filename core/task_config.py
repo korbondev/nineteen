@@ -19,13 +19,12 @@ AVATAR = "avatar"
 DREAMSHAPER_TEXT_TO_IMAGE = "dreamshaper-text-to-image"
 DREAMSHAPER_IMAGE_TO_IMAGE = "dreamshaper-image-to-image"
 
-
 def task_configs_factory() -> dict[str, cmodels.FullTaskConfig]:
     return {
         CHAT_LLAMA_3_2_3B: cmodels.FullTaskConfig(
             task=CHAT_LLAMA_3_2_3B,
             task_type=cmodels.TaskType.TEXT,
-            max_capacity=576_000,
+            max_capacity=300_000,
             orchestrator_server_config=cmodels.OrchestratorServerConfig(
                 server_needed=cmodels.ServerType.LLM,
                 load_model_config={
@@ -52,13 +51,13 @@ def task_configs_factory() -> dict[str, cmodels.FullTaskConfig]:
         CHAT_LLAMA_3_1_70B: cmodels.FullTaskConfig(
             task=CHAT_LLAMA_3_1_70B,
             task_type=cmodels.TaskType.TEXT,
-            max_capacity=576_000,
+            max_capacity=300_000,
             orchestrator_server_config=cmodels.OrchestratorServerConfig(
                 server_needed=cmodels.ServerType.LLM,
                 load_model_config={
                     "model": "hugging-quants/Meta-Llama-3.1-70B-Instruct-AWQ-INT4",
                     "half_precision": True,
-                    "tokenizer": "tau-vision/llama-3-tokenizer-fix",
+                    "tokenizer": "tau-vision/llama-tokenizer-fix",
                     "max_model_len": 16_000,
                     "gpu_utilization": 0.6,
                 },
@@ -79,7 +78,7 @@ def task_configs_factory() -> dict[str, cmodels.FullTaskConfig]:
         CHAT_LLAMA_3_1_8B: cmodels.FullTaskConfig(
             task=CHAT_LLAMA_3_1_8B,
             task_type=cmodels.TaskType.TEXT,
-            max_capacity=576_000,
+            max_capacity=300_000,
             orchestrator_server_config=cmodels.OrchestratorServerConfig(
                 server_needed=cmodels.ServerType.LLM,
                 load_model_config={
@@ -106,10 +105,10 @@ def task_configs_factory() -> dict[str, cmodels.FullTaskConfig]:
         PROTEUS_TEXT_TO_IMAGE: cmodels.FullTaskConfig(
             task=PROTEUS_TEXT_TO_IMAGE,
             task_type=cmodels.TaskType.IMAGE,
-            max_capacity=3_600,
+            max_capacity=1_800,
             orchestrator_server_config=cmodels.OrchestratorServerConfig(
                 server_needed=cmodels.ServerType.IMAGE,
-                load_model_config={"model": "dataautogpt3/ProteusV0.4-Lightning"},
+                load_model_config = {},
                 checking_function="check_image_result",
                 endpoint=cmodels.Endpoints.text_to_image.value,
                 task=PROTEUS_TEXT_TO_IMAGE,
@@ -128,10 +127,10 @@ def task_configs_factory() -> dict[str, cmodels.FullTaskConfig]:
         PROTEUS_IMAGE_TO_IMAGE: cmodels.FullTaskConfig(
             task=PROTEUS_IMAGE_TO_IMAGE,
             task_type=cmodels.TaskType.IMAGE,
-            max_capacity=3_600,
+            max_capacity=1_800,
             orchestrator_server_config=cmodels.OrchestratorServerConfig(
                 server_needed=cmodels.ServerType.IMAGE,
-                load_model_config={"model": "dataautogpt3/ProteusV0.4-Lightning"},
+                load_model_config= {},
                 checking_function="check_image_result",
                 endpoint=cmodels.Endpoints.image_to_image.value,
                 task=PROTEUS_IMAGE_TO_IMAGE,
@@ -153,7 +152,7 @@ def task_configs_factory() -> dict[str, cmodels.FullTaskConfig]:
             max_capacity=3_600,
             orchestrator_server_config=cmodels.OrchestratorServerConfig(
                 server_needed=cmodels.ServerType.IMAGE,
-                load_model_config={"model": "black-forest-labs/FLUX.1-schnell"},
+                load_model_config={},
                 checking_function="check_image_result",
                 endpoint=cmodels.Endpoints.text_to_image.value,
                 task=FLUX_SCHNELL_TEXT_TO_IMAGE,
@@ -172,10 +171,10 @@ def task_configs_factory() -> dict[str, cmodels.FullTaskConfig]:
         FLUX_SCHNELL_IMAGE_TO_IMAGE: cmodels.FullTaskConfig(
             task=FLUX_SCHNELL_IMAGE_TO_IMAGE,
             task_type=cmodels.TaskType.IMAGE,
-            max_capacity=3_600,
+            max_capacity=1_800,
             orchestrator_server_config=cmodels.OrchestratorServerConfig(
                 server_needed=cmodels.ServerType.IMAGE,
-                load_model_config={"model": "black-forest-labs/FLUX.1-schnell"},
+                load_model_config={},
                 checking_function="check_image_result",
                 endpoint=cmodels.Endpoints.image_to_image.value,
                 task=FLUX_SCHNELL_IMAGE_TO_IMAGE,
@@ -194,10 +193,10 @@ def task_configs_factory() -> dict[str, cmodels.FullTaskConfig]:
         AVATAR: cmodels.FullTaskConfig(
             task=AVATAR,
             task_type=cmodels.TaskType.IMAGE,
-            max_capacity=1_120,
+            max_capacity=600,
             orchestrator_server_config=cmodels.OrchestratorServerConfig(
                 server_needed=cmodels.ServerType.IMAGE,
-                load_model_config={"model": "dataautogpt3/ProteusV0.4-Lightning"},
+                load_model_config={},
                 checking_function="check_image_result",
                 endpoint=cmodels.Endpoints.avatar.value,
                 task=AVATAR,
@@ -216,10 +215,10 @@ def task_configs_factory() -> dict[str, cmodels.FullTaskConfig]:
         DREAMSHAPER_TEXT_TO_IMAGE: cmodels.FullTaskConfig(
             task=DREAMSHAPER_TEXT_TO_IMAGE,
             task_type=cmodels.TaskType.IMAGE,
-            max_capacity=3_000,
+            max_capacity=1_500,
             orchestrator_server_config=cmodels.OrchestratorServerConfig(
                 server_needed=cmodels.ServerType.IMAGE,
-                load_model_config={"model": "Lykon/dreamshaper-xl-lightning"},
+                load_model_config={},
                 checking_function="check_image_result",
                 endpoint=cmodels.Endpoints.text_to_image.value,
                 task=DREAMSHAPER_TEXT_TO_IMAGE,
@@ -238,10 +237,10 @@ def task_configs_factory() -> dict[str, cmodels.FullTaskConfig]:
         DREAMSHAPER_IMAGE_TO_IMAGE: cmodels.FullTaskConfig(
             task=DREAMSHAPER_IMAGE_TO_IMAGE,
             task_type=cmodels.TaskType.IMAGE,
-            max_capacity=3_000,
+            max_capacity=1_500,
             orchestrator_server_config=cmodels.OrchestratorServerConfig(
                 server_needed=cmodels.ServerType.IMAGE,
-                load_model_config={"model": "Lykon/dreamshaper-xl-lightning"},
+                load_model_config={},
                 checking_function="check_image_result",
                 endpoint=cmodels.Endpoints.image_to_image.value,
                 task=DREAMSHAPER_IMAGE_TO_IMAGE,
