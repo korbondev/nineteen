@@ -64,15 +64,16 @@ Securely move them onto your machine as usual. Either with the btcli or with a s
 
 ## Create the necessary config
 
-
 ```bash
 python core/create_config.py
 ```
+
 (^ Add --dev flag if you are a developer on nineteen)
 
 If you're running the autoupdater, then you should be running!
 
 Check your autoupdater to see the docker containers building (might take a few minutes on first build)
+
 ```bash
 pm2 logs validator_autoupdater
 ```
@@ -87,7 +88,8 @@ See [helpful commands](./helpful-commands.md) for more information on the docker
 
 ## If you ever need to set weights manually to stop dereg etc
 
-Run 
+Run
+
 ```bash
 task set_weights
 ```
@@ -106,6 +108,32 @@ Error: pq: password authentication failed for user "user"
 sudo rm -rf postgres_data
 docker compose --env-file .vali.env -f docker-compose.yml  up -d --build
 ```
+
+# Managing organic access
+
+**Note this is optional - only if you want to sell your bandwidth. If you don't, you are done!**
+
+During the config setup, add an 'ORGANIC_SERVER_PORT' when asked for it.
+
+Then use
+
+```bash
+./cli.sh --help
+```
+
+To manage all your api keys and similar stuff. Your service will now start up on the port you specified :)
+
+Go to http://ip_address:port/docs to see all the swagger docs
+
+# Choosing your own custom config
+
+**You can now choose any hugging-face text2text model you like (LLM's), as well as any hugging face Text-to-image model you like!**
+
+Miners will be posted of the details during every handshake, and you will be able to view the settings of each validator on https://nineteen.ai/marketplace
+
+See the file [example_config.py](../core/example_config.py) to see how to extend the default config. Instructions are
+at the top of the file!
+
 # Orchestrator setup
 
 ## Starting the Orchestrator server
@@ -113,9 +141,3 @@ docker compose --env-file .vali.env -f docker-compose.yml  up -d --build
 Currently, a bare metal GPU is necessary for validating the GPU models. Please see here for the full instructions!(https://github.com/korbondev/vision-workers/tree/main/validator_orchestrator#readme)
 
 Once this is done, make a note of the IP address of that machine, and the port the orchestrator is running on (the default is 6920, if you didn't change anything)
-
-# Managing organic access
-
-**Note this is optional - only if you want to sell your bandwidth. If you don't, you are done!**
-
-### TODO: Flesh out this section
