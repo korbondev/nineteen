@@ -35,7 +35,7 @@ async def chat_stream(
     # else:
     #     raise ValueError(f"Invalid model: {decrypted_payload.model}")
 
-    address, _ = map_endpoint_with_override(None, task_config.task.value, None)
+    address, _ = map_endpoint_with_override(None, task_config.task, None)
     assert address is not None, f"Address for model: {task_config.task} is not set in env vars!"
 
     logger.info(f"in chat_stream() task: {task_config.task}")
