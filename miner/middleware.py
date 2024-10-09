@@ -8,7 +8,8 @@ import sys
 import ujson as json
 from fastapi import FastAPI, Request, Response
 from fastapi.responses import JSONResponse
-from starlette.types import ASGIApp
+
+# from starlette.types import ASGIApp
 from colorama import Back, Fore, Style, init
 
 
@@ -41,6 +42,7 @@ class ColoredFormatter(logging.Formatter):
         message = message.replace("$BLUE", Fore.BLUE + Style.BRIGHT)
 
         return message
+
 
 # NOTE: Pm2 hates this (colours aren't great), why?
 def get_logger(name: str):
@@ -76,7 +78,6 @@ async def _logging_middleware(request: Request, call_next) -> Response:
     logger.error(f"Request headers: {request.headers}")
 
     try:
-
         body = await request.body()
         if SHOW_ALL_REQUESTS:
             logger.error(f"Request body: {body.decode()}")
@@ -88,7 +89,6 @@ async def _logging_middleware(request: Request, call_next) -> Response:
     logger.error(f"Response status: {response.status_code}")
 
     if response.status_code != 200 or SHOW_ALL_RESPONSES:
-
         response_body = b""
         async for chunk in response.body_iterator:
             response_body += chunk

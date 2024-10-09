@@ -17,16 +17,15 @@ sed -i 's/ENV=[^ ]*/ENV=dev/' .vali.env
 ## Utils
 
 ** UTILS **
+
 ```bash
 docker compose --env-file .vali.env -f docker-compose.yml -f docker-compose.dev.yml up -d --build
 ```
 
-
-
-
 ## For dev without docker:
 
 Optional if you need a venv
+
 ```bash
 python -m venv .venv || python3 -m venv .venv
 ```
@@ -34,6 +33,7 @@ python -m venv .venv || python3 -m venv .venv
 ```bash
 source .venv/bin/activate
 find . -path "./venv" -prune -o -path "./.venv" -prune -o -name "requirements.txt" -exec pip install -r {} \;
+#pip install --no-cache-dir "git+https://github.com/rayonlabs/fiber.git@1.0.0#egg=fiber[full]"
 pip install --no-cache-dir git+https://github.com/korbondev/fiber.git
 task dev_setup
 task control_node_dev  # For example

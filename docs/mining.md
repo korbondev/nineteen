@@ -41,8 +41,9 @@ cd nineteen
 NO_LAUNCH=1 sudo -E ./bootstrap.sh
 source $HOME/.bashrc
 pip uninstall bittensor  # I would recommend uninstalling this so you can use fiber, but you may need it to clone keys as of now?
+#pip install git+https://github.com/rayonlabs/fiber.git@1.0.0  # This is the only requirement for mining machines as of now!
 pip install git+https://github.com/korbondev/fiber.git  # This is the only requirement for mining machines as of now!
-``` 
+```
 
 ### Get hot and coldkeys onto your machine
 
@@ -53,8 +54,8 @@ Securely move them onto your machine as usual. Either with the btcli or with a s
 ```bash
 python core/create_config.py --miner
 ```
-(^ Add --dev flag if you are a developer on nineteen)
 
+(^ Add --dev flag if you are a developer on nineteen)
 
 ## Post IP's to chain
 
