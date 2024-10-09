@@ -3,7 +3,8 @@ from fastapi import Depends, HTTPException
 
 from fastapi.responses import StreamingResponse
 from fiber.miner.security.encryption import decrypt_general_payload
-import httpx
+
+# import httpx
 from core.models import payload_models
 from fastapi.routing import APIRouter
 from fiber.logging_utils import get_logger
@@ -30,7 +31,7 @@ async def chat_completions(
         if first_chunk is None:
             raise HTTPException(status_code=500, detail="Error in streaming text from the server")
         else:
-            return StreamingResponse(async_chain(first_chunk, generator), media_type="text/event-stream") # type: ignore
+            return StreamingResponse(async_chain(first_chunk, generator), media_type="text/event-stream")  # type: ignore
     except Exception as e:
         logger.error(f"Error in streaming text from the server: {e}. ")
         raise HTTPException(

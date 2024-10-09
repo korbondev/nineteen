@@ -10,7 +10,7 @@ from miner.config import WorkerConfig
 from miner.constants import map_endpoint_with_override
 
 from typing import AsyncGenerator, Any
-import ujson as json
+# import ujson as json
 
 logger = get_logger(__name__)
 

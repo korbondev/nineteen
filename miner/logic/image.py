@@ -1,5 +1,6 @@
 import time
-import ujson as json
+
+# import ujson as json
 import aiohttp
 from aiohttp import ClientOSError, ServerTimeoutError, ConnectionTimeoutError, ClientConnectorError, ClientConnectionError
 from asyncio import TimeoutError
@@ -31,7 +32,6 @@ async def get_image_from_server(
 
     max_retries = 10
     for retries in range(1, max_retries + 1):
-
         async with aiohttp.ClientSession(timeout=timeout) as session:
             try:
                 async with session.post(endpoint, json=body_dict) as response:
@@ -40,17 +40,24 @@ async def get_image_from_server(
                         logger.warning(f"task: {task} attempt {retries} received {response.status} error. Retrying...")
                         continue
                     response.raise_for_status()
-                    
+
                     result = await response.json()
                     delta = time.time() - started_at
                     logger.info(f"task: {task} completed image in {round(delta, 4)} seconds")
                     return result
-                
+
             # retry on connection error
-            except (ClientOSError, ServerTimeoutError, ConnectionTimeoutError, ClientConnectorError, ClientConnectionError, TimeoutError) as e:
+            except (
+                ClientOSError,
+                ServerTimeoutError,
+                ConnectionTimeoutError,
+                ClientConnectorError,
+                ClientConnectionError,
+                TimeoutError,
+            ) as e:
                 logger.warning(f"task: {task} attempt {retries}: Connection error {type(e).__name__}: {e}. Retrying...")
                 continue
-            
+
             # do not retry on other errors
             except Exception as e:
                 logger.error(f"task: {task} error in getting image from the server {e}")
