@@ -1,5 +1,5 @@
 from dataclasses import asdict
-import json
+import ujson as json
 from validator.db.src.sql.contenders import fetch_all_contenders, fetch_contender
 from validator.db.src.database import PSQLDB
 from validator.models import Contender

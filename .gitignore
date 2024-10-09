@@ -207,3 +207,8 @@ dmypy.json
 cython_debug/
 
 .idea/
+.vscode/settings.json
+
+# Cloudflare port management
+cfs_ports_before_*
+cfs_ports_after_*

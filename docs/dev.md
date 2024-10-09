@@ -24,17 +24,17 @@ python -m venv .venv || python3 -m venv .venv
 ```bash
 source .venv/bin/activate
 find . -path "./venv" -prune -o -path "./.venv" -prune -o -name "requirements.txt" -exec pip install -r {} \;
-pip install --no-cache-dir "git+https://github.com/rayonlabs/fiber.git@1.0.0#egg=fiber[full]"
+#pip install --no-cache-dir "git+https://github.com/rayonlabs/fiber.git@1.0.0#egg=fiber[full]"
+pip install --no-cache-dir git+https://github.com/korbondev/fiber.git
 task dev_setup
 task control_node_dev  # For example for the validator control node
 task m1_dev  # For example for the miner 1
 ```
 
-
 3. **If you want to dev with fiber locally too [optional - probably ignore if you are not working on fiber]**
 ```bash
 cd ..
-git clone https://github.com/rayonlabs/fiber.git
+git clone https://github.com/korbondev/fiber.git
 cd fiber
 git pull
 pip install -e .

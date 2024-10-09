@@ -1,6 +1,6 @@
 import asyncio
 import datetime
-import json
+import ujson as json
 import time
 from pydantic import BaseModel
 from core import task_config as tcfg
