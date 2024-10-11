@@ -11,7 +11,8 @@ from fiber.logging_utils import get_logger
 
 from miner.logic.chat import chat_stream
 from fiber.miner.core.configuration import Config
-from fiber.miner.dependencies import blacklist_low_stake, get_config, verify_request
+#from fiber.miner.dependencies import blacklist_low_stake, get_config, verify_request
+from fiber.miner.dependencies import get_config, verify_request
 from miner.config import WorkerConfig
 from miner.dependencies import get_worker_config
 
@@ -47,6 +48,7 @@ def factory_router() -> APIRouter:
         chat_completions,
         tags=["Subnet"],
         methods=["POST"],
-        dependencies=[Depends(blacklist_low_stake), Depends(verify_request)],
+        #dependencies=[Depends(blacklist_low_stake), Depends(verify_request)],
+        dependencies=[Depends(verify_request)],
     )
     return router

@@ -1,7 +1,8 @@
 from functools import partial
 import os
 from fastapi.routing import APIRouter
-from fiber.miner.dependencies import blacklist_low_stake, get_config, verify_request
+#from fiber.miner.dependencies import blacklist_low_stake, get_config, verify_request
+from fiber.miner.dependencies import get_config, verify_request
 from fiber.miner.security.encryption import decrypt_general_payload
 from core.models.payload_models import CapacityPayload
 from fiber.logging_utils import get_logger
@@ -57,6 +58,7 @@ def factory_router() -> APIRouter:
         capacity,
         tags=["Subnet"],
         methods=["POST"],
-        dependencies=[Depends(blacklist_low_stake), Depends(verify_request)],
+        #dependencies=[Depends(blacklist_low_stake), Depends(verify_request)],
+        dependencies=[Depends(verify_request)],
     )
     return router

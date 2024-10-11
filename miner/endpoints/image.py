@@ -11,7 +11,8 @@ from miner.config import WorkerConfig
 from miner.dependencies import get_worker_config
 from miner.logic.image import get_image_from_server
 from fiber.miner.core.configuration import Config
-from fiber.miner.dependencies import blacklist_low_stake, get_config as get_fiber_config, verify_request
+#from fiber.miner.dependencies import blacklist_low_stake, get_config as get_fiber_config, verify_request
+from fiber.miner.dependencies import get_config as get_fiber_config, verify_request
 from fiber.logging_utils import get_logger
 
 logger = get_logger(__name__)
@@ -79,27 +80,30 @@ def factory_router() -> APIRouter:
         text_to_image,
         tags=["Subnet"],
         methods=["POST"],
-        dependencies=[Depends(blacklist_low_stake), Depends(verify_request)],
+        #dependencies=[Depends(blacklist_low_stake), Depends(verify_request)],
+        dependencies=[Depends(verify_request)],
     )
     router.add_api_route(
         "/image-to-image",
         image_to_image,
         tags=["Subnet"],
         methods=["POST"],
-        dependencies=[Depends(blacklist_low_stake), Depends(verify_request)],
+        dependencies=[Depends(verify_request)],
     )
     router.add_api_route(
         "/inpaint",
         inpaint,
         tags=["Subnet"],
         methods=["POST"],
-        dependencies=[Depends(blacklist_low_stake), Depends(verify_request)],
+        #dependencies=[Depends(blacklist_low_stake), Depends(verify_request)],
+        dependencies=[Depends(verify_request)],
     )
     router.add_api_route(
         "/avatar",
         avatar,
         tags=["Subnet"],
         methods=["POST"],
-        dependencies=[Depends(blacklist_low_stake), Depends(verify_request)],
+        #dependencies=[Depends(blacklist_low_stake), Depends(verify_request)],
+        dependencies=[Depends(verify_request)],
     )
     return router
