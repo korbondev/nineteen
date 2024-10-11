@@ -28,9 +28,9 @@ async def get_image_from_server(
     logger.info(f"in get_image_from_server() task: {task} sent to {endpoint}")
 
     started_at = time.time()
-    timeout = aiohttp.ClientTimeout(total=10)
+    timeout = aiohttp.ClientTimeout(total=15)
+    max_retries = 3
 
-    max_retries = 10
     for retries in range(1, max_retries + 1):
         async with aiohttp.ClientSession(timeout=timeout) as session:
             try:
