@@ -24,7 +24,8 @@ def task_configs_factory() -> dict[str, cmodels.FullTaskConfig]:
         CHAT_LLAMA_3_2_3B: cmodels.FullTaskConfig(
             task=CHAT_LLAMA_3_2_3B,
             task_type=cmodels.TaskType.TEXT,
-            max_capacity=120_000, 
+            #max_capacity=120_000, 
+            max_capacity=999_999, 
             orchestrator_server_config=cmodels.OrchestratorServerConfig(
                 server_needed=cmodels.ServerType.LLM,
                 load_model_config={
@@ -51,7 +52,8 @@ def task_configs_factory() -> dict[str, cmodels.FullTaskConfig]:
         CHAT_LLAMA_3_1_70B: cmodels.FullTaskConfig(
             task=CHAT_LLAMA_3_1_70B,
             task_type=cmodels.TaskType.TEXT,
-            max_capacity=120_000,
+            #max_capacity=120_000,
+            max_capacity=999_999,
             orchestrator_server_config=cmodels.OrchestratorServerConfig(
                 server_needed=cmodels.ServerType.LLM,
                 load_model_config={
@@ -78,7 +80,8 @@ def task_configs_factory() -> dict[str, cmodels.FullTaskConfig]:
         CHAT_LLAMA_3_1_8B: cmodels.FullTaskConfig(
             task=CHAT_LLAMA_3_1_8B,
             task_type=cmodels.TaskType.TEXT,
-            max_capacity=120_000,
+            #max_capacity=120_000,
+            max_capacity=999_999,
             orchestrator_server_config=cmodels.OrchestratorServerConfig(
                 server_needed=cmodels.ServerType.LLM,
                 load_model_config={
@@ -105,7 +108,8 @@ def task_configs_factory() -> dict[str, cmodels.FullTaskConfig]:
         PROTEUS_TEXT_TO_IMAGE: cmodels.FullTaskConfig(
             task=PROTEUS_TEXT_TO_IMAGE,
             task_type=cmodels.TaskType.IMAGE,
-            max_capacity=800,
+            #max_capacity=800,
+            max_capacity=9999,
             orchestrator_server_config=cmodels.OrchestratorServerConfig(
                 server_needed=cmodels.ServerType.IMAGE,
                 load_model_config = {},
@@ -127,7 +131,8 @@ def task_configs_factory() -> dict[str, cmodels.FullTaskConfig]:
         PROTEUS_IMAGE_TO_IMAGE: cmodels.FullTaskConfig(
             task=PROTEUS_IMAGE_TO_IMAGE,
             task_type=cmodels.TaskType.IMAGE,
-            max_capacity=800,
+            #max_capacity=800,
+            max_capacity=9999,
             orchestrator_server_config=cmodels.OrchestratorServerConfig(
                 server_needed=cmodels.ServerType.IMAGE,
                 load_model_config= {},
@@ -149,7 +154,8 @@ def task_configs_factory() -> dict[str, cmodels.FullTaskConfig]:
         FLUX_SCHNELL_TEXT_TO_IMAGE: cmodels.FullTaskConfig(
             task=FLUX_SCHNELL_TEXT_TO_IMAGE,
             task_type=cmodels.TaskType.IMAGE,
-            max_capacity=2100,
+            #max_capacity=2100,
+            max_capacity=9999,
             orchestrator_server_config=cmodels.OrchestratorServerConfig(
                 server_needed=cmodels.ServerType.IMAGE,
                 load_model_config={},
@@ -171,7 +177,8 @@ def task_configs_factory() -> dict[str, cmodels.FullTaskConfig]:
         FLUX_SCHNELL_IMAGE_TO_IMAGE: cmodels.FullTaskConfig(
             task=FLUX_SCHNELL_IMAGE_TO_IMAGE,
             task_type=cmodels.TaskType.IMAGE,
-            max_capacity=800,
+            #max_capacity=800,
+            max_capacity=9999,
             orchestrator_server_config=cmodels.OrchestratorServerConfig(
                 server_needed=cmodels.ServerType.IMAGE,
                 load_model_config={},
@@ -193,7 +200,8 @@ def task_configs_factory() -> dict[str, cmodels.FullTaskConfig]:
         AVATAR: cmodels.FullTaskConfig(
             task=AVATAR,
             task_type=cmodels.TaskType.IMAGE,
-            max_capacity=800,
+            #max_capacity=800,
+            max_capacity=9999,
             orchestrator_server_config=cmodels.OrchestratorServerConfig(
                 server_needed=cmodels.ServerType.IMAGE,
                 load_model_config={},
@@ -215,7 +223,8 @@ def task_configs_factory() -> dict[str, cmodels.FullTaskConfig]:
         DREAMSHAPER_TEXT_TO_IMAGE: cmodels.FullTaskConfig(
             task=DREAMSHAPER_TEXT_TO_IMAGE,
             task_type=cmodels.TaskType.IMAGE,
-            max_capacity=800,
+            #max_capacity=800,
+            max_capacity=9999,
             orchestrator_server_config=cmodels.OrchestratorServerConfig(
                 server_needed=cmodels.ServerType.IMAGE,
                 load_model_config={},
@@ -237,7 +246,8 @@ def task_configs_factory() -> dict[str, cmodels.FullTaskConfig]:
         DREAMSHAPER_IMAGE_TO_IMAGE: cmodels.FullTaskConfig(
             task=DREAMSHAPER_IMAGE_TO_IMAGE,
             task_type=cmodels.TaskType.IMAGE,
-            max_capacity=800,
+            #max_capacity=800,
+            max_capacity=9999,
             orchestrator_server_config=cmodels.OrchestratorServerConfig(
                 server_needed=cmodels.ServerType.IMAGE,
                 load_model_config={},
