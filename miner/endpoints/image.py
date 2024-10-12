@@ -35,7 +35,9 @@ async def _process_image_request(
     # It is up to miners to have a nicer way of doing this
     # This overrides the model name with the model name from the load_model_config, but only used with custom added tasks
     if task_config.orchestrator_server_config.load_model_config:
-        model_name = f'{task_config.orchestrator_server_config.load_model_config["model_repo"]} | {task_config.orchestrator_server_config.load_model_config["safetensors_filename"]}'
+        model_name = task_config.orchestrator_server_config.load_model_config["model"]
+        if task_config.orchestrator_server_config.load_model_config["model_repo"]:
+            model_name = f'{task_config.orchestrator_server_config.load_model_config["model_repo"]} | {task_config.orchestrator_server_config.load_model_config["safetensors_filename"]}'
         decrypted_payload.model = model_name
 
     assert hasattr(decrypted_payload, 'model'), "The image request payload must have a 'model' attribute"
