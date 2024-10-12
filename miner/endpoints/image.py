@@ -27,8 +27,6 @@ async def _process_image_request(
     
     #logger.info(f"in _process_image_request() post_endpoint: {post_endpoint}")
 
-    assert hasattr(decrypted_payload, 'model'), "The image request payload must have a 'model' attribute"
-
     task_config = tcfg.get_enabled_task_config(decrypted_payload.model)
     if task_config is None:
         raise ValueError(f"Task config not found for model: {decrypted_payload.model}")
@@ -40,6 +38,8 @@ async def _process_image_request(
         model_name = f'{task_config.orchestrator_server_config.load_model_config["model_repo"]} | {task_config.orchestrator_server_config.load_model_config["safetensors_filename"]}'
         decrypted_payload.model = model_name
 
+    assert hasattr(decrypted_payload, 'model'), "The image request payload must have a 'model' attribute"
+    
     image_response = await get_image_from_server(
         body=decrypted_payload,
         post_endpoint=post_endpoint,
