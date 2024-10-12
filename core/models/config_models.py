@@ -1,6 +1,6 @@
 from enum import Enum
 from pydantic import BaseModel, Field
-
+from core.models.utility_models import SCBaseModel
 
 class TaskType(Enum):
     IMAGE = "image"
@@ -22,7 +22,7 @@ class Endpoints(Enum):
     chat_completions = "/chat/completions"
 
 
-class TaskScoringConfig(BaseModel):
+class TaskScoringConfig(SCBaseModel):
     task: str
     mean: float
     variance: float
@@ -30,7 +30,7 @@ class TaskScoringConfig(BaseModel):
     task_type: TaskType
 
 
-class OrchestratorServerConfig(BaseModel):
+class OrchestratorServerConfig(SCBaseModel):
     server_needed: ServerType = Field(examples=[ServerType.LLM, ServerType.IMAGE])
     load_model_config: dict | None = Field(examples=[None])
     checking_function: str = Field(examples=["check_text_result", "check_image_result"])
@@ -41,12 +41,12 @@ class OrchestratorServerConfig(BaseModel):
         use_enum_values = True
 
 
-class SyntheticGenerationConfig(BaseModel):
+class SyntheticGenerationConfig(SCBaseModel):
     func: str
     kwargs: dict
 
 
-class FullTaskConfig(BaseModel):
+class FullTaskConfig(SCBaseModel):
     task: str
     task_type: TaskType
     max_capacity: float
