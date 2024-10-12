@@ -71,6 +71,7 @@ class InpaintPayload(SCBaseModel):
     height: int = Field(1024, title="Height", description="Height for text generation.")
     init_image: str = Field(..., title="Init Image")
     mask_image: str = Field(..., title="Mask Image")
+    model: str = Field(default="inpaint", title="Model")
 
 
 class AvatarPayload(SCBaseModel):
@@ -85,3 +86,4 @@ class AvatarPayload(SCBaseModel):
     )
     control_strength: float = Field(0.5, title="Control Strength", description="Control Strength for text generation.")
     init_image: str = Field(..., title="Init Image")
+    model: str = Field(default="instantid", title="Model")
