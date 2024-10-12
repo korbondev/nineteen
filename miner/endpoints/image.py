@@ -36,7 +36,7 @@ async def _process_image_request(
     # This overrides the model name with the model name from the load_model_config, but only used with custom added tasks
     if task_config.orchestrator_server_config.load_model_config:
         model_name = task_config.orchestrator_server_config.load_model_config["model"]
-        if task_config.orchestrator_server_config.load_model_config["model_repo"]:
+        if "model_repo" in task_config.orchestrator_server_config.load_model_config:
             model_name = f'{task_config.orchestrator_server_config.load_model_config["model_repo"]} | {task_config.orchestrator_server_config.load_model_config["safetensors_filename"]}'
         decrypted_payload.model = model_name
 
