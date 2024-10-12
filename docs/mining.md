@@ -50,12 +50,12 @@ pip install git+https://github.com/korbondev/fiber.git  # This is the only requi
 Securely move them onto your machine as usual. Either with the btcli or with a secure method of your choosing.
 
 ## Create the config
+
 (Add --dev flag if you are a developer on nineteen)
+
 ```bash
 python core/create_config.py --miner
 ```
-
-(^ Add --dev flag if you are a developer on nineteen)
 
 ## Post IP's to chain
 

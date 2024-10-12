@@ -19,7 +19,7 @@ subprocess.run(["python3", "-m", "pip", "install", "python-dotenv"], stdout=subp
 from dotenv import load_dotenv
 import socket
 import hashlib
-import json
+import ujson as json
 
 
 # Constants
