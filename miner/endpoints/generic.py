@@ -1,7 +1,8 @@
 from functools import partial
 import os
 from fastapi.routing import APIRouter
-from fiber.miner.dependencies import blacklist_low_stake, get_config, verify_request
+#from fiber.miner.dependencies import blacklist_low_stake, get_config, verify_request
+from fiber.miner.dependencies import get_config, verify_request
 from fiber.miner.security.encryption import decrypt_general_payload
 from core.models.payload_models import CapacityPayload
 from fiber.logging_utils import get_logger
@@ -21,7 +22,7 @@ async def capacity(
     logger.info(f"Received task configs: {configs} from validator {validator_hotkey}. I should do something with this info...")
 
     my_miner_type = os.getenv("MINER_TYPE")
-    
+
     metagraph = config.metagraph
     validator_node = metagraph.nodes.get(validator_hotkey)
     total_stake = sum(node.stake for node in metagraph.nodes.values())
@@ -38,12 +39,13 @@ async def capacity(
 
         if my_miner_type != task_type:
             continue
-        
+
         # TO help dev by just returning 10% to all  validators
         if os.getenv("ENV", "prod").lower() == "dev":
             capacities[task] = max_capacity * 0.1
         elif weight > 0:
-            capacities[task] = max_capacity * validator_node.stake / total_stake
+            #capacities[task] = max_capacity * validator_node.stake / total_stake
+            capacities[task] = max_capacity
 
     logger.debug(f"Returning capacities: {capacities}")
     return capacities
@@ -56,6 +58,7 @@ def factory_router() -> APIRouter:
         capacity,
         tags=["Subnet"],
         methods=["POST"],
-        dependencies=[Depends(blacklist_low_stake), Depends(verify_request)],
+        #dependencies=[Depends(blacklist_low_stake), Depends(verify_request)],
+        dependencies=[Depends(verify_request)],
     )
     return router

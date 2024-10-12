@@ -76,6 +76,7 @@ async def _handshake(config: Config, node: Node, async_client: httpx.AsyncClient
         replace_with_docker_localhost=config.replace_with_docker_localhost,
         replace_with_localhost=config.replace_with_localhost,
     )
+    logger.debug(f"Handshaking with {server_address}, node: {node}")
 
     try:
         symmetric_key, symmetric_key_uid = await handshake.perform_handshake(

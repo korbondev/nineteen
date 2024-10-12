@@ -4,11 +4,12 @@ from collections import defaultdict
 from pydantic import BaseModel, Field
 from typing import Optional
 from datetime import datetime
+from core.models.utility_models import SCBaseModel
 
 task_data = defaultdict(lambda: defaultdict(list))
 
 
-class PeriodScore(BaseModel):
+class PeriodScore(SCBaseModel):
     hotkey: str
     task: str
     period_score: Optional[float]
@@ -16,7 +17,7 @@ class PeriodScore(BaseModel):
     created_at: datetime
 
 
-class Contender(BaseModel):
+class Contender(SCBaseModel):
     node_hotkey: str
     node_id: int
     netuid: int
@@ -32,8 +33,7 @@ class Contender(BaseModel):
 
     @property
     def id(self) -> str:
-        contender_id = self.node_hotkey + "-" + self.task
-        return contender_id
+        return f"{self.node_hotkey}-{self.task}"
 
 
 def calculate_period_score(
@@ -66,7 +66,7 @@ def calculate_period_score(
     return max(percentage_of_good_requests * (1 - rate_limit_punishment_factor) * (1 - server_error_punishment_factor), 0)
 
 
-class RewardData(BaseModel):
+class RewardData(SCBaseModel):
     id: str
     task: str
     node_id: int

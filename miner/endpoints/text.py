@@ -3,14 +3,16 @@ from fastapi import Depends, HTTPException
 
 from fastapi.responses import StreamingResponse
 from fiber.miner.security.encryption import decrypt_general_payload
-import httpx
+
+# import httpx
 from core.models import payload_models
 from fastapi.routing import APIRouter
 from fiber.logging_utils import get_logger
 
 from miner.logic.chat import chat_stream
 from fiber.miner.core.configuration import Config
-from fiber.miner.dependencies import blacklist_low_stake, get_config, verify_request
+#from fiber.miner.dependencies import blacklist_low_stake, get_config, verify_request
+from fiber.miner.dependencies import get_config, verify_request
 from miner.config import WorkerConfig
 from miner.dependencies import get_worker_config
 
@@ -25,15 +27,18 @@ async def chat_completions(
     worker_config: WorkerConfig = Depends(get_worker_config),
 ) -> StreamingResponse:
     try:
-        generator = chat_stream(config.httpx_client, decrypted_payload, worker_config)
+        generator = chat_stream(decrypted_payload, worker_config)
         first_chunk = await generator.__anext__()
         if first_chunk is None:
             raise HTTPException(status_code=500, detail="Error in streaming text from the server")
         else:
-            return StreamingResponse(async_chain(first_chunk, generator), media_type="text/event-stream")
-    except httpx.HTTPStatusError as e:
+            return StreamingResponse(async_chain(first_chunk, generator), media_type="text/event-stream")  # type: ignore
+    except Exception as e:
         logger.error(f"Error in streaming text from the server: {e}. ")
-        raise HTTPException(status_code=500, detail=f"Error in streaming text from the server: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error in streaming text from the server: {e}",
+        ) from e
 
 
 def factory_router() -> APIRouter:
@@ -43,6 +48,7 @@ def factory_router() -> APIRouter:
         chat_completions,
         tags=["Subnet"],
         methods=["POST"],
-        dependencies=[Depends(blacklist_low_stake), Depends(verify_request)],
+        #dependencies=[Depends(blacklist_low_stake), Depends(verify_request)],
+        dependencies=[Depends(verify_request)],
     )
     return router

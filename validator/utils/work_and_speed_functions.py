@@ -1,4 +1,4 @@
-import json
+import ujson as json
 
 from core.models import config_models as cmodels
 from fiber.logging_utils import get_logger

@@ -7,6 +7,7 @@ from pydantic import BaseModel
 from fiber.logging_utils import get_logger
 from fiber import Keypair
 from core import constants as ccst
+from core.models.utility_models import SCBaseModel
 
 from validator.models import RewardData
 
@@ -72,7 +73,7 @@ async def post_to_nineteen_ai(
             logger.error(f"Error when posting to {ccst.BASE_NINETEEN_API_URL} to store data for {data_type_to_post}: {repr(e)}")
 
 
-class MinerTypesPostBody(BaseModel):
+class MinerTypesPostBody(SCBaseModel):
     validator_hotkey: str
     miner_hotkey: str
     miner_type: str
@@ -81,20 +82,20 @@ class RewardDataPostBody(RewardData):
     testnet: bool
 
 
-class ValidatorInfoPostBody(BaseModel):
+class ValidatorInfoPostBody(SCBaseModel):
     versions: str
     validator_hotkey: str
     task_configs: list[dict[str, Any]]
 
 
-class MinerCapacitiesPostObject(BaseModel):
+class MinerCapacitiesPostObject(SCBaseModel):
     miner_hotkey: str
     task: str
     volume: float
     validator_hotkey: str
 
 
-class ContenderPayload(BaseModel):
+class ContenderPayload(SCBaseModel):
     node_id: int
     node_hotkey: str
     validator_hotkey: str
@@ -106,7 +107,7 @@ class ContenderPayload(BaseModel):
     requests_500: Optional[int]
 
 
-class UidRecordPostObject(BaseModel):
+class UidRecordPostObject(SCBaseModel):
     axon_uid: int
     miner_hotkey: str
     validator_hotkey: str
@@ -133,7 +134,7 @@ class UidRecordPostObject(BaseModel):
         }
 
 
-class UidRecordsPostBody(BaseModel):
+class UidRecordsPostBody(SCBaseModel):
     data: List[UidRecordPostObject]
 
     def dump(self):

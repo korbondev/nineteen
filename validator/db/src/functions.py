@@ -1,6 +1,6 @@
 import asyncio
 from datetime import datetime, timedelta
-import json
+import ujson as json
 from typing import List, Any
 
 
