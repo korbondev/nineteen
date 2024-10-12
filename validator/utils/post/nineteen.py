@@ -22,6 +22,7 @@ class DataTypeToPost(enum.Enum):
     MINER_TYPES = 5
 
 
+
 data_type_to_url = {
     DataTypeToPost.REWARD_DATA: ccst.BASE_NINETEEN_API_URL + "v1/store/reward_data",
     DataTypeToPost.UID_RECORD: ccst.BASE_NINETEEN_API_URL + "v1/store/uid_records",
@@ -65,20 +66,17 @@ async def post_to_nineteen_ai(
                 data=json.dumps(data_to_post),
                 headers=headers,
             )
-            logger.info(
-                f"Resp status code from {ccst.BASE_NINETEEN_API_URL}: {resp.status_code} for post type {data_type_to_post}"
-            )
+            logger.info(f"Resp status code from {ccst.BASE_NINETEEN_API_URL}: {resp.status_code} for post type {data_type_to_post}")
             resp.raise_for_status()
             return resp
         except Exception as e:
             logger.error(f"Error when posting to {ccst.BASE_NINETEEN_API_URL} to store data for {data_type_to_post}: {repr(e)}")
 
 
-class MinerTypesPostBody(BaseModel):
+class MinerTypesPostBody(SCBaseModel):
     validator_hotkey: str
     miner_hotkey: str
     miner_type: str
-
 
 class RewardDataPostBody(RewardData):
     testnet: bool

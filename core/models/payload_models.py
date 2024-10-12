@@ -11,8 +11,7 @@ class CapacityResponse(SCBaseModel):
 class TextToSpeechRequest(SCBaseModel):
     params: dict[str, Any]
 
-
-class CapacityPayload(BaseModel):
+class CapacityPayload(SCBaseModel):
     task_configs: list[dict[str, Any]]
 
 

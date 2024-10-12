@@ -6,7 +6,7 @@ from pydantic import BaseModel
 from core.models import payload_models
 from fastapi.routing import APIRouter
 from miner import constants as mcst
-
+from core import task_config as tcfg
 from miner.config import WorkerConfig
 from miner.dependencies import get_worker_config
 from miner.logic.image import get_image_from_server
@@ -26,6 +26,20 @@ async def _process_image_request(
 ) -> payload_models.ImageResponse:
     
     #logger.info(f"in _process_image_request() post_endpoint: {post_endpoint}")
+
+    assert hasattr(decrypted_payload, 'model'), "The image request payload must have a 'model' attribute"
+
+    task_config = tcfg.get_enabled_task_config(decrypted_payload.model)
+    if task_config is None:
+        raise ValueError(f"Task config not found for model: {decrypted_payload.model}")
+    
+    # NOTE: load_model_config for image models is set only for the models that are added customly by validators 
+    # It is up to miners to have a nicer way of doing this
+    # This overrides the model name with the model name from the load_model_config, but only used with custom added tasks
+    if task_config.orchestrator_server_config.load_model_config:
+        model_name = f'{task_config.orchestrator_server_config.load_model_config["model_repo"]} | {task_config.orchestrator_server_config.load_model_config["safetensors_filename"]}'
+        decrypted_payload.model = model_name
+
     image_response = await get_image_from_server(
         body=decrypted_payload,
         post_endpoint=post_endpoint,
@@ -58,7 +72,9 @@ async def image_to_image(
 
 
 async def inpaint(
-    decrypted_payload: payload_models.InpaintPayload = Depends(partial(decrypt_general_payload, payload_models.InpaintPayload)),
+    decrypted_payload: payload_models.InpaintPayload = Depends(
+        partial(decrypt_general_payload, payload_models.InpaintPayload)
+    ),
     fiber_config: Config = Depends(get_fiber_config),
     worker_config: WorkerConfig = Depends(get_worker_config),
 ) -> payload_models.ImageResponse:

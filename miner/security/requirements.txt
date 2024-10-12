@@ -1,4 +1,4 @@
-ujson
+ujson==5.*
 pandas
 bittensor
 #bittensor-cli[sdk]

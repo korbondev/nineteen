@@ -1,6 +1,6 @@
 from enum import Enum
 from pydantic import BaseModel, Field
-
+from core.models.utility_models import SCBaseModel
 
 class TaskType(Enum):
     IMAGE = "image"
@@ -22,7 +22,7 @@ class Endpoints(Enum):
     chat_completions = "/chat/completions"
 
 
-class TaskScoringConfig(BaseModel):
+class TaskScoringConfig(SCBaseModel):
     task: str
     mean: float
     variance: float
@@ -30,7 +30,7 @@ class TaskScoringConfig(BaseModel):
     task_type: TaskType
 
 
-class OrchestratorServerConfig(BaseModel):
+class OrchestratorServerConfig(SCBaseModel):
     server_needed: ServerType = Field(examples=[ServerType.LLM, ServerType.IMAGE])
     load_model_config: dict | None = Field(examples=[None])
     checking_function: str = Field(examples=["check_text_result", "check_image_result"])
@@ -41,12 +41,12 @@ class OrchestratorServerConfig(BaseModel):
         use_enum_values = True
 
 
-class SyntheticGenerationConfig(BaseModel):
+class SyntheticGenerationConfig(SCBaseModel):
     func: str
     kwargs: dict
 
 
-class FullTaskConfig(BaseModel):
+class FullTaskConfig(SCBaseModel):
     task: str
     task_type: TaskType
     max_capacity: float
@@ -58,11 +58,16 @@ class FullTaskConfig(BaseModel):
     weight: float
     timeout: float
     enabled: bool = True
+    model_info: dict | None = None
 
     def get_public_config(self) -> dict | None:
         if not self.enabled:
             return None
-        model_config = self.orchestrator_server_config.load_model_config
+        if self.model_info is not None:
+            model_config = self.model_info
+        else:
+            assert self.orchestrator_server_config.load_model_config, "Model info is None but load_model_config is not set"
+            model_config = self.orchestrator_server_config.load_model_config
         if "gpu_utilization" in model_config:
             del model_config["gpu_utilization"]
         return {
