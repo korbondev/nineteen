@@ -117,8 +117,6 @@ def main():
                 "created_on": app.get("created_on"),
                 "modified_on": app.get("modified_on")
             }
-            print(instance)
-            quit()
 
             # Check the dns name for the start of the domain
             if instance["dns_name"].startswith(CLOUDFLARE_DNS_NAME_PREFIX):
@@ -139,6 +137,15 @@ def main():
                 updated_protocol = f"{protocol}/{new_port}"
                 instance["protocol"] = updated_protocol
                 print(f"Updated protocol: {instance['protocol']}")
+                
+                
+                # origin_direct example
+                #       'origin_direct': ['tcp://147.185.40.123:22001']
+                
+                # get the origin_direct port
+                if ORIGIN_IP_ADDRESS is not None:
+                    origin_direct_port = instance["origin_direct"][0].split(":")[-1]
+                    instance["origin_direct"] = [f"{protocol}://{ORIGIN_IP_ADDRESS}:{origin_direct_port}"]
 
                 # Update the instance on Cloudflare
                 update = {
@@ -149,7 +156,7 @@ def main():
                     "proxy_protocol": instance["proxy_protocol"],
                     "tls": instance["tls"],
                     "traffic_type": instance["traffic_type"],
-                    "edge_ips": instance["edge_ips"] if ORIGIN_IP_ADDRESS is None else [ORIGIN_IP_ADDRESS],
+                    "edge_ips": instance["edge_ips"],
                     "argo_smart_routing": instance["argo_smart_routing"]
                 }
 
