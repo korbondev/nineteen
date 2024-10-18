@@ -148,7 +148,7 @@ def main():
                     "proxy_protocol": instance["proxy_protocol"],
                     "tls": instance["tls"],
                     "traffic_type": instance["traffic_type"],
-                    "edge_ips": instance["edge_ips"] if ORIGIN_IP_ADDRESS is None else ORIGIN_IP_ADDRESS,
+                    "edge_ips": instance["edge_ips"] if ORIGIN_IP_ADDRESS is None else [ORIGIN_IP_ADDRESS],
                     "argo_smart_routing": instance["argo_smart_routing"]
                 }
 
