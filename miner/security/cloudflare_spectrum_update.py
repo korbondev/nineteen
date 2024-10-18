@@ -7,6 +7,7 @@ import subprocess
 from dotenv import load_dotenv, dotenv_values
 
 # Check for CLI argument for whether to increment or decrement the port
+err_msg_1 = "Please use increment, decrement, or zero."
 if len(sys.argv) > 1:
     if sys.argv[1] == "increment":
         print("Incrementing port number")
@@ -14,11 +15,31 @@ if len(sys.argv) > 1:
     elif sys.argv[1] == "decrement":
         print("Decrementing port number")
         PORT_ADJUSTMENT_FACTOR = -1
+    elif sys.argv[1] == "zero":
+        print("Decrementing port number")
+        PORT_ADJUSTMENT_FACTOR = 0
     else:
-        print("Invalid argument. Please use 'increment' or 'decrement'.")
+        print(f"Invalid argument. {err_msg_1}")
         quit()
 else:
-    print("No argument provided. Please use 'increment' or 'decrement'.")
+    print(f"No argument provided. {err_msg_1}")
+    quit()
+
+if len(sys.argv) > 2:
+    # check if the system argument is an IP that is valid
+    valid_ip = False
+    parts = sys.argv[2].split('.')
+    if len(parts) == 4:
+        if all(part.isdigit() for part in parts):
+            if all(0 <= int(part) < 256 for part in parts):
+                valid_ip = True    
+    if valid_ip:
+        ORIGIN_IP_ADDRESS = sys.argv[2]
+    else:
+        print("Invalid IP.")
+        quit()        
+else:
+    print("No argument provided.")
     quit()
 
 # Load credentials from .env file
@@ -28,9 +49,9 @@ CLOUDFLARE_BEARER_TOKEN = os.environ.get("CLOUDFLARE_BEARER_TOKEN")
 CLOUDFLARE_EMAIL = os.environ.get("CLOUDFLARE_EMAIL")
 CLOUDFLARE_ZONE_ID = os.environ.get("CLOUDFLARE_ZONE_ID")
 CLOUDFLARE_DNS_NAME_PREFIX = os.environ.get("CLOUDFLARE_DNS_NAME_PREFIX")
-CLOUDFLARE_PORT_INCREMENT_AMT = os.environ.get("CLOUDFLARE_PORT_INCREMENT_AMT")
-PREFIX_ONLY_ON_DNS = os.environ.get("PREFIX_ONLY_ON_DNS")
-REPO_DIRECTORY = os.environ.get("REPO_DIRECTORY")
+CLOUDFLARE_PORT_INCREMENT_AMT = os.environ.get("CLOUDFLARE_PORT_INCREMENT_AMT", 1)
+PREFIX_ONLY_ON_DNS = str(os.environ.get("PREFIX_ONLY_ON_DNS"))
+REPO_DIRECTORY = str(os.environ.get("REPO_DIRECTORY"))
 UPDATE_NODE_PORT_IN_NODE_FILE = os.environ.get("UPDATE_NODE_PORT_IN_NODE_FILE")
 
 # Cloudflare API endpoint
@@ -127,7 +148,7 @@ def main():
                     "proxy_protocol": instance["proxy_protocol"],
                     "tls": instance["tls"],
                     "traffic_type": instance["traffic_type"],
-                    "edge_ips": instance["edge_ips"],
+                    "edge_ips": instance["edge_ips"] if ORIGIN_IP_ADDRESS is None else ORIGIN_IP_ADDRESS,
                     "argo_smart_routing": instance["argo_smart_routing"]
                 }
 
