@@ -38,9 +38,7 @@ if len(sys.argv) > 2:
     else:
         print("Invalid IP.")
         quit()        
-else:
-    print("No argument provided.")
-    quit()
+# the argument is optional
 
 # Load credentials from .env file
 load_dotenv()
