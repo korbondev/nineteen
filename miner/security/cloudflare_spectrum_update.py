@@ -25,6 +25,7 @@ else:
     print(f"No argument provided. {err_msg_1}")
     quit()
 
+ORIGIN_IP_ADDRESS = None
 if len(sys.argv) > 2:
     # check if the system argument is an IP that is valid
     valid_ip = False
