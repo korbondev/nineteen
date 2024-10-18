@@ -181,6 +181,7 @@ def main():
                     # Check if the file exists
                     node_env_path = os.path.join(REPO_DIRECTORY, filename)
                     if os.path.exists(node_env_path):
+                        print(f"Found .env file for subdomain {DNS_SUBDOMAIN_PREFIX} at {filename}")
                         # Load the .env file
                         env_vars = dotenv_values(node_env_path)
                         HOTKEY_NAME = env_vars.get('HOTKEY_NAME')
@@ -194,6 +195,7 @@ def main():
                         NETUID = env_vars.get('NETUID')
 
                         if UPDATE_NODE_PORT_IN_NODE_FILE == "true":
+                            print(f"Updating port number in {filename} from {NODE_EXTERNAL_PORT} to {new_port}")
                             # Write back to the .env file
                             try:
                                 with open(node_env_path, 'w') as f:
