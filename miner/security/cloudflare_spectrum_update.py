@@ -146,6 +146,7 @@ def main():
                 if ORIGIN_IP_ADDRESS is not None:
                     origin_direct_port = instance["origin_direct"][0].split(":")[-1]
                     instance["origin_direct"] = [f"{protocol}://{ORIGIN_IP_ADDRESS}:{origin_direct_port}"]
+                    print(f"Updated origin_direct: {instance['origin_direct']}")
 
                 # Update the instance on Cloudflare
                 update = {
@@ -192,15 +193,15 @@ def main():
                         NODE_EXTERNAL_IP = env_vars.get('NODE_EXTERNAL_IP')
                         NETUID = env_vars.get('NETUID')
 
-
-
                         if UPDATE_NODE_PORT_IN_NODE_FILE == "true":
                             # Write back to the .env file
                             try:
                                 with open(node_env_path, 'w') as f:
-                                    for key, _ in env_vars.items():
-                                        if key == 'NODE_EXTERNAL_PORT':
-                                            f.write(f"{key}={new_port}\n")
+                                    for line in f.readlines():
+                                        if line.startswith('NODE_EXTERNAL_PORT='):
+                                            f.write(f"NODE_EXTERNAL_PORT={new_port}\n")
+                                        else:
+                                            f.write(line)
                                 print(f"Updated {node_env_path} with new port number {new_port}")
                             except Exception as e:
                                 print(f"Failed to update {node_env_path}: {e}")
