@@ -117,6 +117,8 @@ def main():
                 "created_on": app.get("created_on"),
                 "modified_on": app.get("modified_on")
             }
+            print(instance)
+            quit()
 
             # Check the dns name for the start of the domain
             if instance["dns_name"].startswith(CLOUDFLARE_DNS_NAME_PREFIX):
