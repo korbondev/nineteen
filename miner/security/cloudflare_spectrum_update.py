@@ -198,12 +198,15 @@ def main():
                             print(f"Updating port number in {filename} from {NODE_EXTERNAL_PORT} to {new_port}")
                             # Write back to the .env file
                             try:
-                                with open(node_env_path, 'w') as f:
-                                    for line in f.readlines():
-                                        if line.startswith('NODE_EXTERNAL_PORT='):
-                                            f.write(f"NODE_EXTERNAL_PORT={new_port}\n")
-                                        else:
-                                            f.write(line)
+                                # open the file and read the lines, but modify NODE_EXTERNAL_PORT where the line begins with ig
+                                with open(node_env_path, 'r') as file:
+                                    lines = file.readlines()
+                                    with open(node_env_path, 'w') as file:
+                                        for line in lines:
+                                            if line.startswith('NODE_EXTERNAL_PORT'):
+                                                file.write(f'NODE_EXTERNAL_PORT={new_port}\n')
+                                            else:
+                                                file.write(line)                                        
                                 print(f"Updated {node_env_path} with new port number {new_port}")
                             except Exception as e:
                                 print(f"Failed to update {node_env_path}: {e}")
