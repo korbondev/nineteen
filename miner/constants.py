@@ -9,6 +9,8 @@ ENDPOINT_TO_PORT_MAP = {
     "chat-llama-3-1-70b": (7405, "v1/chat/completions", None),
     "chat-llama-3-1-8b": (7105, "v1/chat/completions", None),
     "chat-llama-3-2-3b": (7205, "v1/chat/completions", None),
+    "chat-dolphin-2.9.4-llama3.1-8b": (7206, "v1/chat/completions", None),
+    "jondurbin/bagel-8b-v1.0": (7207, "v1/chat/completions", None),
     "avatar": (7212, "avatar", "avatar"),
     "inpaint": (7222, "inpaint", "inpaint"),
     "proteus-text-to-image": (7231, "txt2img", "proteus"),

@@ -11,6 +11,8 @@ logger = get_logger(__name__)
 CHAT_LLAMA_3_2_3B = "chat-llama-3-2-3b"
 CHAT_LLAMA_3_1_70B = "chat-llama-3-1-70b"
 CHAT_LLAMA_3_1_8B = "chat-llama-3-1-8b"
+CHAT_DOLPHIN_2_9_4_8B = "chat-dolphin-2.9.4-llama3.1-8b"
+CHAT_BAGEL_1_8B = "jondurbin/bagel-8b-v1.0"
 PROTEUS_TEXT_TO_IMAGE = "proteus-text-to-image"
 PROTEUS_IMAGE_TO_IMAGE = "proteus-image-to-image"
 FLUX_SCHNELL_TEXT_TO_IMAGE = "flux-schnell-text-to-image"
@@ -99,6 +101,52 @@ def task_configs_factory() -> dict[str, cmodels.FullTaskConfig]:
             volume_to_requests_conversion=300,
             is_stream=True,
             weight=0.15,
+            timeout=2,
+            enabled=True,
+        ),
+        CHAT_DOLPHIN_2_9_4_8B: cmodels.FullTaskConfig(
+            task=CHAT_DOLPHIN_2_9_4_8B,
+            task_type=cmodels.TaskType.TEXT,
+            max_capacity=999_999,
+            orchestrator_server_config=cmodels.OrchestratorServerConfig(
+                server_needed=cmodels.ServerType.LLM,
+                load_model_config={
+                    "model": "cognitivecomputations/dolphin-2.9.4-llama3.1-8b",
+                },
+                endpoint=cmodels.Endpoints.chat_completions.value,
+                checking_function="check_text_result",
+                task=CHAT_DOLPHIN_2_9_4_8B,
+            ),
+            synthetic_generation_config=cmodels.SyntheticGenerationConfig(
+                func="generate_chat_synthetic", kwargs={"model": CHAT_DOLPHIN_2_9_4_8B}
+            ),
+            endpoint=cmodels.Endpoints.chat_completions.value,
+            volume_to_requests_conversion=300,
+            is_stream=True,
+            weight=0.05982905982905982,
+            timeout=2,
+            enabled=True,
+        ),
+        CHAT_BAGEL_1_8B: cmodels.FullTaskConfig(
+            task=CHAT_BAGEL_1_8B,
+            task_type=cmodels.TaskType.TEXT,
+            max_capacity=999_999,
+            orchestrator_server_config=cmodels.OrchestratorServerConfig(
+                server_needed=cmodels.ServerType.LLM,
+                load_model_config={
+                    "model": "jondurbin/bagel-8b-v1.0",
+                },
+                endpoint=cmodels.Endpoints.chat_completions.value,
+                checking_function="check_text_result",
+                task=CHAT_BAGEL_1_8B,
+            ),
+            synthetic_generation_config=cmodels.SyntheticGenerationConfig(
+                func="generate_chat_synthetic", kwargs={"model": CHAT_BAGEL_1_8B}
+            ),
+            endpoint=cmodels.Endpoints.chat_completions.value,
+            volume_to_requests_conversion=300,
+            is_stream=True,
+            weight=0.08547008547008544,
             timeout=2,
             enabled=True,
         ),
